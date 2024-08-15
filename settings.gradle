@@ -1,0 +1,3 @@
+rootProject.name = 'sleek-speedy-msa'
+
+include 'user', 'order', 'product'

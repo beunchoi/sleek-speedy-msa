@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  user:
+    image: user
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+
+  product:
+    image: product
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  order:
+    image: order
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: sleek_speedy
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234 && sleep 5"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      retries: 10
