@@ -8,16 +8,16 @@ import lombok.Data;
 
 @Data
 @JsonInclude(Include.NON_NULL)
-public class UserResponse {
+public class UserResponseDto {
   private String email;
-  private String username;
+  private String name;
   private String userId;
 
   private List<OrderResponse> orders;
 
-  public UserResponse(User user) {
+  public UserResponseDto(User user) {
     this.email = user.getEmail();
-    this.username = user.getUsername();
+    this.name = user.getName();
     this.userId = user.getUserId();
   }
 }

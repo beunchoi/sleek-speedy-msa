@@ -4,7 +4,7 @@ import com.hanghae.sleekspeedy.domain.user.dto.MailAuthDto;
 import com.hanghae.sleekspeedy.domain.user.dto.MailRequestDto;
 import com.hanghae.sleekspeedy.domain.user.dto.SignupRequestDto;
 import com.hanghae.sleekspeedy.domain.user.dto.SignupResponseDto;
-import com.hanghae.sleekspeedy.domain.user.dto.UserResponse;
+import com.hanghae.sleekspeedy.domain.user.dto.UserResponseDto;
 import com.hanghae.sleekspeedy.domain.user.service.MailService;
 import com.hanghae.sleekspeedy.domain.user.service.UserService;
 import jakarta.mail.MessagingException;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping
 public class UserController {
 
   private final MailService mailService;
@@ -39,7 +39,7 @@ public class UserController {
   }
 
   /* Send Email: 인증번호 전송 버튼 click */
-  @PostMapping("/signup/sendEmail")
+  @PostMapping("/users/sendEmail")
   public Map<String, String> mailSend(@RequestBody @Valid MailRequestDto mailRequestDto)
       throws MessagingException {
     String code = mailService.sendSimpleMessage(mailRequestDto.getEmail());
@@ -51,7 +51,7 @@ public class UserController {
   }
 
   /* Email Auth: 인증번호 입력 후 인증 버튼 click */
-  @PostMapping("/signup/authEmail")
+  @PostMapping("/users/authEmail")
   public String authCheck(@RequestBody @Valid MailAuthDto mailAuthDto) {
     Boolean checked = mailService.checkAuthNum(mailAuthDto.getMail(), mailAuthDto.getAuthNum());
     if (checked) {
@@ -62,7 +62,7 @@ public class UserController {
     }
   }
 
-  @PostMapping("/signup")
+  @PostMapping("/users")
   public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto,
       BindingResult bindingResult) {
 
@@ -75,16 +75,16 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @GetMapping
-  public ResponseEntity<List<UserResponse>> getUserByAll() {
-    List<UserResponse> users = userService.getUserByAll();
+  @GetMapping("/users")
+  public ResponseEntity<List<UserResponseDto>> getUserByAll() {
+    List<UserResponseDto> users = userService.getUserByAll();
 
     return ResponseEntity.status(HttpStatus.OK).body(users);
   }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<UserResponse> getUserByUserId(@PathVariable String userId) {
-    UserResponse response = userService.getUserByUserId(userId);
+  @GetMapping("/users/{userId}")
+  public ResponseEntity<UserResponseDto> getUserByUserId(@PathVariable String userId) {
+    UserResponseDto response = userService.getUserByUserId(userId);
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }

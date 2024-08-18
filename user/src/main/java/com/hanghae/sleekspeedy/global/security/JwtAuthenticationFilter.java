@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,20 +21,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   public JwtAuthenticationFilter(JwtUtil jwtUtil) {
     this.jwtUtil = jwtUtil;
-    setFilterProcessesUrl("/api/users/login");
+    setFilterProcessesUrl("/login");
   }
 
   @Override
-  public Authentication attemptAuthentication(
+  public Authentication attemptAuthentication( // 1
       HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     try {
       LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
 
       return getAuthenticationManager().authenticate(
           new UsernamePasswordAuthenticationToken(
-              requestDto.getUsername(),
+              requestDto.getEmail(),
               requestDto.getPassword(),
-              null
+              new ArrayList<>()
           )
       );
     } catch (IOException e) {
@@ -42,13 +43,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
   }
 
-  @Override
+  @Override // 3
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-    Long userId = ((UserDetailsImpl) authResult.getPrincipal()).getUserId();
     String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
     UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-    String token = jwtUtil.createToken(username, userId, role);
+    String token = jwtUtil.createToken(username, role); // 4
     response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
   }
 

@@ -30,13 +30,13 @@ public class User {
   private String userId;
 
   @Column(nullable = false, unique = true)
-  private String username;
+  private String email;
 
   @Column(nullable = false)
   private String password;
 
   @Column(nullable = false, unique = true)
-  private String email;
+  private String name;
 
   @Column(nullable = false, unique = true)
   private String phoneNum;
@@ -56,9 +56,9 @@ public class User {
 
   public User(String userId, SignupRequestDto request, String password, UserRoleEnum role) {
     this.userId = userId;
-    this.username = request.getUsername();
-    this.password = password;
     this.email = request.getEmail();
+    this.password = password;
+    this.name = request.getName();
     this.phoneNum = request.getPhoneNum();
     this.address = request.getAddress();
     this.role = role;

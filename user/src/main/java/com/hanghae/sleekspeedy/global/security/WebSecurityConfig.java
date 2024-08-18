@@ -1,4 +1,4 @@
-package com.hanghae.sleekspeedy.global.config;
+package com.hanghae.sleekspeedy.global.security;
 
 import com.hanghae.sleekspeedy.global.jwt.JwtUtil;
 import com.hanghae.sleekspeedy.global.security.JwtAuthenticationFilter;
@@ -62,7 +62,7 @@ public class WebSecurityConfig {
     http.authorizeHttpRequests((authorizeHttpRequests) ->
         authorizeHttpRequests
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-            .requestMatchers("/users/**").permitAll()
+            .requestMatchers("/**").permitAll()
             .anyRequest().authenticated() // 그 외 모든 요청 인증처리
     );
 

@@ -6,12 +6,12 @@ import lombok.Data;
 @Data
 public class SignupResponseDto {
   private String email;
-  private String username;
+  private String name;
   private String userId;
 
   public SignupResponseDto(User user) {
     this.email = user.getEmail();
-    this.username = user.getUsername();
+    this.name = user.getName();
     this.userId = user.getUserId();
   }
 }
