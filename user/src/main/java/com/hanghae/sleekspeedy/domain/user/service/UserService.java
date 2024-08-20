@@ -2,20 +2,22 @@ package com.hanghae.sleekspeedy.domain.user.service;
 
 import com.hanghae.sleekspeedy.domain.basket.entity.Basket;
 import com.hanghae.sleekspeedy.domain.basket.repository.BasketRepository;
-import com.hanghae.sleekspeedy.domain.user.dto.OrderResponse;
+import com.hanghae.sleekspeedy.domain.user.client.OrderServiceClient;
+import com.hanghae.sleekspeedy.domain.user.dto.OrderResponseDto;
 import com.hanghae.sleekspeedy.domain.user.dto.SignupRequestDto;
 import com.hanghae.sleekspeedy.domain.user.dto.SignupResponseDto;
 import com.hanghae.sleekspeedy.domain.user.dto.UserResponseDto;
 import com.hanghae.sleekspeedy.domain.user.entity.User;
 import com.hanghae.sleekspeedy.domain.user.entity.UserRoleEnum;
 import com.hanghae.sleekspeedy.domain.user.repository.UserRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final BasketRepository basketRepository;
+  private final OrderServiceClient orderServiceClient;
 
   private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
@@ -59,9 +62,16 @@ public class UserService {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new NullPointerException("존재하지 않는 유저입니다."));
 
-    List<OrderResponse> orders = new ArrayList<>();
+//    String orderUrl = "http://ORDER-SERVICE/order-service/%s/orders";
+//    ResponseEntity<List<OrderResponseDto>> responseEntity = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//        new ParameterizedTypeReference<List<OrderResponseDto>>() {
+//    });
+//
+//    List<OrderResponseDto> response = responseEntity.getBody();
 
-    return new UserResponseDto(user);
+    List<OrderResponseDto> response = orderServiceClient.getOrdersByUserId(userId);
+
+    return new UserResponseDto(user, response);
   }
 
   public List<UserResponseDto> getUserByAll() {

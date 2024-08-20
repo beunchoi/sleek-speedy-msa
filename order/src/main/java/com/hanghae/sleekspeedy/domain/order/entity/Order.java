@@ -1,13 +1,13 @@
 package com.hanghae.sleekspeedy.domain.order.entity;
 
 import com.hanghae.sleekspeedy.domain.order.dto.OrderRequestDto;
+import com.hanghae.sleekspeedy.global.util.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "orders")
 @NoArgsConstructor
-public class Order {
+public class Order extends Timestamp {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

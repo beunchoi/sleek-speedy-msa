@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class SignupRequestDto {
 
-  @Pattern(regexp = "^[a-z0-9]{4,10}", message = "username은 숫자 및 알파벳 소문자 4~10자로 입력해주세요.")
+  @Pattern(regexp = "^[a-z0-9]{4,10}", message = "name은 숫자 및 알파벳 소문자 4~10자로 입력해주세요.")
   private String name;
   @Email(message = "옳바른 email 형식이 아닙니다.")
   private String email;

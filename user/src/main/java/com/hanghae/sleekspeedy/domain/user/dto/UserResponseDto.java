@@ -13,7 +13,14 @@ public class UserResponseDto {
   private String name;
   private String userId;
 
-  private List<OrderResponse> orders;
+  private List<OrderResponseDto> orders;
+
+  public UserResponseDto(User user, List<OrderResponseDto> response) {
+    this.email = user.getEmail();
+    this.name = user.getName();
+    this.userId = user.getUserId();
+    this.orders = response;
+  }
 
   public UserResponseDto(User user) {
     this.email = user.getEmail();

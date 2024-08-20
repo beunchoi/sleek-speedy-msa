@@ -1,10 +1,8 @@
 package com.hanghae.sleekspeedy.domain.order.dto;
 
 import com.hanghae.sleekspeedy.domain.order.entity.Order;
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 public class OrderResponseDto {
@@ -12,16 +10,15 @@ public class OrderResponseDto {
   private Integer quantity;
   private Integer price;
   private Integer totalPrice;
-
+  private LocalDateTime createdAt;
   private String orderId;
-  private String userId;
 
   public OrderResponseDto(Order order) {
     this.productId = order.getProductId();
     this.quantity = order.getQuantity();
     this.price = order.getPrice();
     this.totalPrice = order.getTotalPrice();
+    this.createdAt = order.getCreatedAt();
     this.orderId = order.getOrderId();
-    this.userId = order.getUserId();
   }
 }
