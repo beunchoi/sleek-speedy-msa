@@ -53,6 +53,12 @@ dependencies {
 
     // Feign Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    // Spring Cloud Config Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    // Spring Cloud Starter Bootstrap
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    // Spring Boot Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 tasks.named('test') {
