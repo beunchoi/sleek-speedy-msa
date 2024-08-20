@@ -2,7 +2,9 @@ package com.hanghae.sleekspeedy.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.sleekspeedy.domain.user.dto.LoginRequestDto;
+import com.hanghae.sleekspeedy.domain.user.dto.UserResponseDto;
 import com.hanghae.sleekspeedy.domain.user.entity.UserRoleEnum;
+import com.hanghae.sleekspeedy.domain.user.service.UserService;
 import com.hanghae.sleekspeedy.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -18,10 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j(topic = "로그인할 때 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
   private final JwtUtil jwtUtil;
+  private final UserService userService;
+  Environment env;
 
-  public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+  public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService, Environment env) {
     this.jwtUtil = jwtUtil;
-    setFilterProcessesUrl("/login");
+    this.userService = userService;
+    this.env = env;
+    setFilterProcessesUrl("/user-service/login");
   }
 
   @Override
@@ -48,8 +55,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
     UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-    String token = jwtUtil.createToken(username, role); // 4
+    UserResponseDto userDetails = userService.getUserDetailsByEmail(username);
+
+    String token = jwtUtil.createToken(userDetails.getUserId(), role); // 4
+
     response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+    response.addHeader("userId", userDetails.getUserId());
   }
 
   @Override

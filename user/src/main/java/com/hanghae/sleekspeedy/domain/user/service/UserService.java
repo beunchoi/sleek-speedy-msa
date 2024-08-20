@@ -69,4 +69,11 @@ public class UserService {
 
     return users.stream().map(UserResponseDto::new).collect(Collectors.toList());
   }
+
+  public UserResponseDto getUserDetailsByEmail(String email) {
+    User user = userRepository.findByEmail(email).orElseThrow(
+        () -> new NullPointerException("해당 유저가 존재하지 않습니다."));
+
+    return new UserResponseDto(user);
+  }
 }

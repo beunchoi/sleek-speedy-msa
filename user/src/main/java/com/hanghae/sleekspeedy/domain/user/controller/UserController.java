@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/user-service")
 public class UserController {
 
   private final MailService mailService;
@@ -35,7 +35,10 @@ public class UserController {
 
   @GetMapping("/health_check")
   public String status() {
-    return String.format("유저 서비스 정상 작동 중입니다. 포트 번호 : %s", env.getProperty("local.server.port"));
+    return String.format("유저 서비스 정상 작동 중입니다."
+            + ", port(local.server.port)=" + env.getProperty("local.server.port")
+            + ", port(server.port)=" + env.getProperty("server.port")
+            + ", token secret=" + env.getProperty("token.secret"));
   }
 
   /* Send Email: 인증번호 전송 버튼 click */
