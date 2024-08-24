@@ -10,21 +10,27 @@ import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final BasketRepository basketRepository;
   private final OrderServiceClient orderServiceClient;
+  private final CircuitBreakerFactory circuitBreakerFactory;
 
   private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
@@ -58,7 +64,7 @@ public class UserService {
 
   public UserResponseDto getUserByUserId(String userId) {
     User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new NullPointerException("존재하지 않는 유저입니다."));
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
 //    String orderUrl = "http://ORDER-SERVICE/order-service/%s/orders";
 //    ResponseEntity<List<OrderResponseDto>> responseEntity = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
@@ -67,7 +73,18 @@ public class UserService {
 //
 //    List<OrderResponseDto> response = responseEntity.getBody();
 
-    List<OrderResponseDto> response = orderServiceClient.getOrdersByUserId(userId);
+//    List<OrderResponseDto> response = null;
+//    try {
+//      response = orderServiceClient.getOrdersByUserId(userId);
+//    } catch (FeignException ex) {
+//      log.error(ex.getMessage());
+//    }
+
+//    List<OrderResponseDto> response = orderServiceClient.getOrdersByUserId(userId);
+
+    CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+    List<OrderResponseDto> response = circuitBreaker.run(() -> orderServiceClient.getOrdersByUserId(userId),
+        throwable -> new ArrayList<>());
 
     return new UserResponseDto(user, response);
   }
@@ -80,7 +97,7 @@ public class UserService {
 
   public UserResponseDto getUserDetailsByEmail(String email) {
     User user = userRepository.findByEmail(email).orElseThrow(
-        () -> new NullPointerException("해당 유저가 존재하지 않습니다."));
+        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
     return new UserResponseDto(user);
   }

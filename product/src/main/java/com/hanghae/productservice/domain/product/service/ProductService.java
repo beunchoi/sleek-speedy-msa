@@ -28,7 +28,7 @@ public class ProductService {
 
   public ProductResponseDto getProductDescription(Long productId) {
     Product product = productRepository.findById(productId)
-        .orElseThrow(() -> new NullPointerException("해당 상품이 존재하지 않습니다."));
+        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
     String description = product.getDescription();
     return new ProductResponseDto(description);

@@ -1,5 +1,8 @@
 package com.hanghae.userservice;
 
+import com.hanghae.userservice.domain.user.client.error.FeignErrorDecoder;
+import feign.Logger;
+import feign.Logger.Level;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -28,5 +31,9 @@ public class UserApplication {
   @LoadBalanced
   public RestTemplate getRestTemplate() {
     return new RestTemplate();
+  }
+  @Bean
+  public Logger.Level feignLoggerLevel() {
+    return Level.FULL;
   }
 }

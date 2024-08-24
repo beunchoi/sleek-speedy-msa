@@ -33,7 +33,7 @@ public class OrderService {
 
   public OrderResponseDto getOrderByOrderId(String orderId) {
     Order order = orderRepository.findByOrderId(orderId)
-        .orElseThrow(() -> new NullPointerException("주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new IllegalArgumentException("주문이 존재하지 않습니다."));
 
     return new OrderResponseDto(order);
   }

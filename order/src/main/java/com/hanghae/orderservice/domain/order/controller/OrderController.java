@@ -1,9 +1,9 @@
 package com.hanghae.orderservice.domain.order.controller;
 
-import com.hanghae.orderservice.global.jwt.JwtUtil;
 import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.service.OrderService;
+import com.hanghae.orderservice.global.messagequeue.KafkaProducer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
   private final OrderService orderService;
-  private final JwtUtil jwtUtil;
   private final Environment env;
+  private final KafkaProducer kafkaProducer;
 
   @GetMapping("/health_check")
   public String status() {
@@ -34,6 +34,8 @@ public class OrderController {
   public ResponseEntity<OrderResponseDto> createOrder(@PathVariable String userId, @RequestBody OrderRequestDto request) {
 
     OrderResponseDto response = orderService.createOrder(request, userId);
+
+    kafkaProducer.send("product-topic", response);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

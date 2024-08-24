@@ -14,7 +14,7 @@ public class BasketService {
 
   public void addProductToBasket(User user, Long productId) {
 
-//    Product product = productRepository.findById(productId).orElseThrow(() -> new NullPointerException("해당 상품이 존재하지 않습니다."));
+//    Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 //    BasketProduct basketProduct = new BasketProduct(user, product);
 //
 //    basketProductRepository.save(basketProduct);

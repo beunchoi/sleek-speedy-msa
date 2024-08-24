@@ -7,6 +7,7 @@ import com.hanghae.userservice.domain.user.dto.SignupResponseDto;
 import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.service.MailService;
 import com.hanghae.userservice.domain.user.service.UserService;
+import io.micrometer.core.annotation.Timed;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class UserController {
   private final Environment env;
 
   @GetMapping("/health_check")
+  @Timed(value = "user.status", longTask = true)
   public String status() {
     return String.format("유저 서비스 정상 작동 중입니다."
             + ", port(local.server.port)=" + env.getProperty("local.server.port")
@@ -61,7 +63,7 @@ public class UserController {
       return "이메일 인증 성공!";
     }
     else {
-      throw new NullPointerException("이메일 인증 실패!");
+      throw new IllegalArgumentException("이메일 인증 실패!");
     }
   }
 

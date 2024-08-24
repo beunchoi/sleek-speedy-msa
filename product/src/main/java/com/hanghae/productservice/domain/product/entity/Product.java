@@ -52,4 +52,8 @@ public class Product {
   public void incrementStock() {
     this.stock++;
   }
+
+  public void updateStock(int stock) {
+    this.stock = stock;
+  }
 }
