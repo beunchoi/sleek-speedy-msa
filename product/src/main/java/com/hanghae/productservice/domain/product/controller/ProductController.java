@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/product-service")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -28,22 +28,22 @@ public class ProductController {
     return String.format("상품 서비스 정상 작동 중입니다. 포트 번호 : %s", env.getProperty("local.server.port"));
   }
 
-  @PostMapping
+  @PostMapping("/products")
   public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto requestDto) {
     ProductResponseDto response = productService.createProduct(requestDto);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @GetMapping
+  @GetMapping("/products")
   public ResponseEntity<List<ProductResponseDto>> getProducts() {
     List<ProductResponseDto> response = productService.getProducts();
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @GetMapping("/{productId}")
-  public ProductResponseDto getProductDescription(@PathVariable Long productId) {
-    return productService.getProductDescription(productId);
-  }
+//  @GetMapping("/{productId}")
+//  public ProductResponseDto getProductDescription(@PathVariable Long productId) {
+//    return productService.getProductDescription(productId);
+//  }
 }

@@ -1,10 +1,11 @@
 package com.hanghae.orderservice.domain.order.controller;
 
+import com.hanghae.orderservice.domain.order.dto.CancelResponse;
 import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
+import com.hanghae.orderservice.domain.order.dto.ReturnRequestResponse;
 import com.hanghae.orderservice.domain.order.service.OrderService;
 import com.hanghae.orderservice.global.messagequeue.KafkaProducer;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,27 +42,20 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @GetMapping("/{userId}/orders")
-  public ResponseEntity<List<OrderResponseDto>> getOrdersByUserId(@PathVariable String userId) {
-    List<OrderResponseDto> response = orderService.getOrdersByUserId(userId);
+  @PutMapping("/{userId}/{orderId}/cancel")
+  public ResponseEntity<CancelResponse> cancelOrder(@PathVariable String userId, @PathVariable String orderId) {
+
+    CancelResponse response = orderService.cancelOrder(userId, orderId);
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-//  @GetMapping("/orders/{orderId}")
-//  public List<OrderProductResponse> getOrderProducts(@PathVariable Long orderId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//    return orderService.getOrderProducts(orderId, userDetails.getUser());
-//  }
-//
-//  @PutMapping("/orders/{orderProductId}/cancel")
-//  public ResponseEntity<ResponseDto> cancelOrderProduct(@PathVariable Long orderProductId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//    orderService.cancelOrderProduct(orderProductId, userDetails.getUser());
-//    return ResponseEntity.ok().body(ResponseDto.success(200));
-//  }
-//
-//  @PutMapping("/orders/{orderProductId}/return")
-//  public ResponseEntity<ResponseDto> returnOrderProduct(@PathVariable Long orderProductId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//    orderService.returnOrderProduct(orderProductId, userDetails.getUser());
-//    return ResponseEntity.ok().body(ResponseDto.success(200));
-//  }
+  @PutMapping("/{userId}/{orderId}/return")
+  public ResponseEntity<ReturnRequestResponse> requestReturn(@PathVariable String userId,
+      @PathVariable String orderId) {
+
+    ReturnRequestResponse response = orderService.requestReturn(userId, orderId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
 }
