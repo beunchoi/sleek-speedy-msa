@@ -28,6 +28,12 @@ public class ProductController {
     return String.format("상품 서비스 정상 작동 중입니다. 포트 번호 : %s", env.getProperty("local.server.port"));
   }
 
+  @PostMapping("/{productId}/initialize")
+  public ResponseEntity initializeStock(@PathVariable String productId) {
+    productService.initializeStock(productId);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
   @PostMapping("/products")
   public ResponseEntity<ProductResponseDto> createProduct(@RequestBody ProductRequestDto requestDto) {
     ProductResponseDto response = productService.createProduct(requestDto);
@@ -43,7 +49,8 @@ public class ProductController {
   }
 
   @GetMapping("/{productId}")
-  public ProductResponseDto getProductByProductId(@PathVariable String productId) {
-    return productService.getProductByProductId(productId);
+  public ResponseEntity<ProductResponseDto> getProductByProductId(@PathVariable String productId) {
+    ProductResponseDto response = productService.getProductByProductId(productId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

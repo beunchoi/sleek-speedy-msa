@@ -7,6 +7,7 @@ import com.hanghae.productservice.domain.product.repository.ProductRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
   private final ProductRepository productRepository;
+  private final RedisTemplate<String, String> redisTemplate;
+  private static final String STOCK_KEY_PREFIX = "product:stock:";
 
   public ProductResponseDto createProduct(ProductRequestDto requestDto) {
     Product product = productRepository.save(new Product(requestDto));
@@ -31,5 +34,13 @@ public class ProductService {
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
     return new ProductResponseDto(product);
+  }
+
+  public void initializeStock(String productId) {
+    Product product = productRepository.findByProductId(productId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+
+    redisTemplate.opsForValue().set(STOCK_KEY_PREFIX + productId,
+        String.valueOf(product.getStock()));
   }
 }
