@@ -26,11 +26,10 @@ public class ProductService {
     return products.stream().map(ProductResponseDto::new).collect(Collectors.toList());
   }
 
-//  public ProductResponseDto getProductDescription(Long productId) {
-//    Product product = productRepository.findById(productId)
-//        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
-//
-//    String description = product.getDescription();
-//    return new ProductResponseDto(description);
-//  }
+  public ProductResponseDto getProductByProductId(String productId) {
+    Product product = productRepository.findByProductId(productId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+
+    return new ProductResponseDto(product);
+  }
 }

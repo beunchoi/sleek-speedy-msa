@@ -2,9 +2,9 @@ package com.hanghae.productservice.domain.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hanghae.productservice.domain.product.entity.Product;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductResponseDto {
 
@@ -21,10 +21,7 @@ public class ProductResponseDto {
     this.title = product.getTitle();
     this.image = product.getImage();
     this.price = product.getPrice();
-    this.stock = product.getStock();
-  }
-
-  public ProductResponseDto(String description) {
-    this.description = description;
+    this.category = product.getCategory();
+    this.description = product.getDescription();
   }
 }
