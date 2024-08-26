@@ -37,7 +37,8 @@ public class OrderController {
 
     OrderResponseDto response = orderService.createOrder(request, userId);
 
-    kafkaProducer.send("product-topic", response);
+//    kafkaProducer.send("product-topic", response);
+    orderService.updateStock(request.getProductId(), request.getQuantity());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
