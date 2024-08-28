@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -43,6 +45,7 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final RedisTemplate<String, String> redisTemplate;
   private final KafkaProducer kafkaProducer;
+  private final RedissonClient redissonClient;
   private final RestTemplate restTemplate = new RestTemplate();
   private static final String STOCK_KEY_PREFIX = "product:stock:";
   private static final String HOST = "https://open-api.kakaopay.com";
@@ -58,48 +61,55 @@ public class OrderService {
   }
   @Transactional
   public void approvePayment(String pgToken) {
-    String tid = redisTemplate.opsForValue().get("tid");
-    String orderId = redisTemplate.opsForValue().get("orderId");
-    String userId = redisTemplate.opsForValue().get("userId");
-    String productId = redisTemplate.opsForValue().get("productId");
+    String lockKey = "payment:lock:" + pgToken;
+    RLock lock = redissonClient.getLock(lockKey);
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "SECRET_KEY " + "DEVCFD942EFA3112904ED6632AC7F492D0E4BC34"); // 실제 Secret Key를 사용해야 합니다.
-    headers.add("Content-Type", "application/json");
+    try {
+      lock.lock();
 
-    Map<String, Object> params = new HashMap<>();
-    params.put("cid", "TC0ONETIME");
-    params.put("tid", tid);
-    params.put("partner_order_id", orderId);
-    params.put("partner_user_id", userId);
-    params.put("pg_token", pgToken);
-    params.put("payload", productId);
+      String tid = redisTemplate.opsForValue().get("tid");
+      String orderId = redisTemplate.opsForValue().get("orderId");
+      String userId = redisTemplate.opsForValue().get("userId");
+      String productId = redisTemplate.opsForValue().get("productId");
 
-    URI uri = UriComponentsBuilder
-        .fromUriString(HOST)
-        .path("/online/v1/payment/approve")
-        .build()
-        .toUri();
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Authorization", "SECRET_KEY " + "DEVCFD942EFA3112904ED6632AC7F492D0E4BC34"); // 실제 Secret Key를 사용해야 합니다.
+      headers.add("Content-Type", "application/json");
 
-    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(params, headers);
+      Map<String, Object> params = new HashMap<>();
+      params.put("cid", "TC0ONETIME");
+      params.put("tid", tid);
+      params.put("partner_order_id", orderId);
+      params.put("partner_user_id", userId);
+      params.put("pg_token", pgToken);
+      params.put("payload", productId);
 
-    ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.POST, entity, Map.class);
-    Map<String, Object> responseBody = response.getBody();
-    log.info("Payment approved successfully: {}", responseBody);
+      URI uri = UriComponentsBuilder
+          .fromUriString(HOST)
+          .path("/online/v1/payment/approve")
+          .build()
+          .toUri();
+
+      HttpEntity<Map<String, Object>> entity = new HttpEntity<>(params, headers);
+
+      ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.POST, entity, Map.class);
+      Map<String, Object> responseBody = response.getBody();
+      log.info("Payment approved successfully: {}", responseBody);
 
 //    kafkaProducer.sendSuccessMessage(responseBody);
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      Map<String, Object> successPayload = new HashMap<>();
-      successPayload.put("response", responseBody);
-      String successMessage = mapper.writeValueAsString(successPayload);
-      this.orderSuccess(successMessage);
-      log.info("Payment success message sent to Kafka: {}", successMessage);
-    } catch (JsonProcessingException ex) {
-      log.error("Failed to send payment success message to Kafka", ex);
+      try {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> successPayload = new HashMap<>();
+        successPayload.put("response", responseBody);
+        String successMessage = mapper.writeValueAsString(successPayload);
+        this.orderSuccess(successMessage);
+        log.info("Payment success message sent to Kafka: {}", successMessage);
+      } catch (JsonProcessingException ex) {
+        log.error("Failed to send payment success message to Kafka", ex);
+      }
+    } finally {
+      lock.unlock();
     }
-
-
   }
 
 //  @Transactional
