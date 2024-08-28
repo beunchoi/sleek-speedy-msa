@@ -40,19 +40,28 @@ public class Order extends Timestamp {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private OrderStatus status = OrderStatus.ORDERED;
+  private OrderStatus status;
   @Column
   private LocalDate deliveredDate;
   @Column
   private LocalDate returnRequestedDate;
 
-  public Order(OrderRequestDto request, String orderId, Integer totalPrice, String userId) {
+  public Order(OrderRequestDto request, String orderId, Integer totalPrice, String userId, OrderStatus status) {
     this.userId = userId;
     this.orderId = orderId;
     this.productId = request.getProductId();
     this.quantity = request.getQuantity();
     this.price = request.getPrice();
     this.totalPrice = totalPrice;
+    this.status = status;
+  }
+
+  public void success() {
+    this.status = OrderStatus.ORDERED;
+  }
+
+  public void failure() {
+    this.status = OrderStatus.FAILED;
   }
 
   public void cancel() {

@@ -3,6 +3,7 @@ package com.hanghae.orderservice.domain.order.controller;
 import com.hanghae.orderservice.domain.order.dto.CancelResponse;
 import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
+import com.hanghae.orderservice.domain.order.dto.PaymentRequest;
 import com.hanghae.orderservice.domain.order.dto.ReturnRequestResponse;
 import com.hanghae.orderservice.domain.order.service.OrderService;
 import com.hanghae.orderservice.global.messagequeue.KafkaProducer;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,9 +40,30 @@ public class OrderController {
     OrderResponseDto response = orderService.createOrder(request, userId);
 
 //    kafkaProducer.send("product-topic", response);
-    orderService.updateStock(request.getProductId(), request.getQuantity());
+//    orderService.updateStock(request.getProductId(), request.getQuantity());
+    kafkaProducer.send("payment-topic", new PaymentRequest(response, userId));
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  @GetMapping("/kakaopay/approval")
+  public ResponseEntity<String> approvePayment(
+      @RequestParam("pg_token") String pgToken) {
+
+    orderService.approvePayment(pgToken);
+    return ResponseEntity.ok("Payment approved successfully");
+  }
+
+  @GetMapping("/kakaopay/fail")
+  public ResponseEntity<String> paymentFail() {
+    kafkaProducer.sendFailureMessage("failure");
+    return ResponseEntity.badRequest().body("Payment failed");
+  }
+
+  @GetMapping("/kakaopay/cancel")
+  public ResponseEntity<String> paymentCancel() {
+    kafkaProducer.sendFailureMessage("cancel");
+    return ResponseEntity.ok("Payment canceled");
   }
 
   @PutMapping("/{userId}/{orderId}/cancel")
