@@ -30,7 +30,7 @@ public class Product {
   private String image;
 
   @Column(nullable = false)
-  private int price;
+  private Integer price;
 
   @Column(nullable = false)
   private String category;
@@ -39,7 +39,7 @@ public class Product {
   private String description;
 
   @Column(nullable = false)
-  private int stock;
+  private Integer stock;
 
   public Product(ProductRequestDto requestDto) {
     this.title = requestDto.getTitle();
