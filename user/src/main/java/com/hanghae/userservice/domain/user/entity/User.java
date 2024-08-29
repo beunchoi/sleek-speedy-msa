@@ -1,16 +1,13 @@
 package com.hanghae.userservice.domain.user.entity;
 
-import com.hanghae.userservice.domain.basket.entity.Basket;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
@@ -50,9 +47,6 @@ public class User {
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
   private UserRoleEnum role;
-
-  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-  private Basket basket;
 
   public User(String userId, SignupRequestDto request, String password, UserRoleEnum role) {
     this.userId = userId;

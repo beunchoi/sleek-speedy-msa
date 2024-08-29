@@ -1,15 +1,12 @@
 package com.hanghae.orderservice.domain.order.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.orderservice.domain.order.dto.CancelResponse;
-import com.hanghae.orderservice.domain.order.dto.ReturnRequestResponse;
-import com.hanghae.orderservice.domain.order.entity.OrderStatus;
-import com.hanghae.orderservice.domain.order.repository.OrderRepository;
 import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
+import com.hanghae.orderservice.domain.order.dto.ReturnRequestResponse;
 import com.hanghae.orderservice.domain.order.entity.Order;
+import com.hanghae.orderservice.domain.order.entity.OrderStatus;
+import com.hanghae.orderservice.domain.order.repository.OrderRepository;
 import com.hanghae.orderservice.global.messagequeue.KafkaProducer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -28,7 +26,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,7 +41,6 @@ public class OrderService {
 
   private final OrderRepository orderRepository;
   private final RedisTemplate<String, String> redisTemplate;
-  private final KafkaProducer kafkaProducer;
   private final RedissonClient redissonClient;
   private final RestTemplate restTemplate = new RestTemplate();
   private static final String STOCK_KEY_PREFIX = "product:stock:";
@@ -71,6 +67,9 @@ public class OrderService {
       String orderId = redisTemplate.opsForValue().get("orderId");
       String userId = redisTemplate.opsForValue().get("userId");
       String productId = redisTemplate.opsForValue().get("productId");
+      String quantity = redisTemplate.opsForValue().get("quantity");
+
+      this.orderSuccess(productId, orderId, Integer.valueOf(quantity));
 
       HttpHeaders headers = new HttpHeaders();
       headers.add("Authorization", "SECRET_KEY " + "DEVCFD942EFA3112904ED6632AC7F492D0E4BC34"); // 실제 Secret Key를 사용해야 합니다.
@@ -97,16 +96,6 @@ public class OrderService {
       log.info("Payment approved successfully: {}", responseBody);
 
 //    kafkaProducer.sendSuccessMessage(responseBody);
-      try {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> successPayload = new HashMap<>();
-        successPayload.put("response", responseBody);
-        String successMessage = mapper.writeValueAsString(successPayload);
-        this.orderSuccess(successMessage);
-        log.info("Payment success message sent to Kafka: {}", successMessage);
-      } catch (JsonProcessingException ex) {
-        log.error("Failed to send payment success message to Kafka", ex);
-      }
     } finally {
       lock.unlock();
     }
@@ -114,14 +103,7 @@ public class OrderService {
 
 //  @Transactional
 //  @KafkaListener(topics = "payment-success-topic")
-  public void orderSuccess(String kafkaMessage) throws JsonProcessingException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode rootNode = objectMapper.readTree(kafkaMessage);
-    JsonNode responeNode = rootNode.path("response");
-    String productId = responeNode.path("payload").asText();
-    String orderId = responeNode.path("partner_order_id").asText();
-    Integer quantity = responeNode.path("quantity").asInt();
-
+  public void orderSuccess(String productId, String orderId, Integer quantity) {
     String stockKey = STOCK_KEY_PREFIX + productId;
 
     // Lua 스크립트를 사용하여 재고를 원자적으로 감소시킵니다.
@@ -236,5 +218,11 @@ public class OrderService {
         order.shippedToDelivered();
       }
     }
+  }
+
+  public List<OrderResponseDto> getOrdersByUserId(String userId) {
+    List<Order> orderList = orderRepository.findAllByUserId(userId);
+
+    return orderList.stream().map(OrderResponseDto::new).collect(Collectors.toList());
   }
 }

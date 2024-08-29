@@ -7,6 +7,7 @@ import com.hanghae.orderservice.domain.order.dto.PaymentRequest;
 import com.hanghae.orderservice.domain.order.dto.ReturnRequestResponse;
 import com.hanghae.orderservice.domain.order.service.OrderService;
 import com.hanghae.orderservice.global.messagequeue.KafkaProducer;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -80,6 +81,12 @@ public class OrderController {
 
     ReturnRequestResponse response = orderService.requestReturn(userId, orderId);
 
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @GetMapping("/{userId}/orders")
+  public ResponseEntity<List<OrderResponseDto>> getOrdersByUserId(@PathVariable String userId) {
+    List<OrderResponseDto> response = orderService.getOrdersByUserId(userId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

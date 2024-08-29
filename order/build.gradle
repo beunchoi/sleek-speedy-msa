@@ -57,6 +57,8 @@ dependencies {
     // Spring Boot Actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'org.redisson:redisson:3.16.0'
 }
 
 tasks.named('test') {

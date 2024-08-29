@@ -1,7 +1,5 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.domain.basket.entity.Basket;
-import com.hanghae.userservice.domain.basket.repository.BasketRepository;
 import com.hanghae.userservice.domain.user.client.OrderServiceClient;
 import com.hanghae.userservice.domain.user.dto.OrderResponseDto;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
@@ -10,6 +8,7 @@ import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.repository.UserRepository;
+import com.hanghae.userservice.domain.wish.repository.WishRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +27,6 @@ public class UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
-  private final BasketRepository basketRepository;
   private final OrderServiceClient orderServiceClient;
   private final CircuitBreakerFactory circuitBreakerFactory;
 
@@ -57,7 +55,6 @@ public class UserService {
     User user = new User(userId, request, password, role);
 
     userRepository.save(user);
-    basketRepository.save(new Basket(user));
 
     return new SignupResponseDto(user);
   }
