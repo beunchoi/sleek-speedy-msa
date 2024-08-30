@@ -47,20 +47,24 @@ public class OrderController {
   public ResponseEntity<String> approvePayment(
       @RequestParam("pg_token") String pgToken) {
 
-    paymentService.approvePayment(pgToken);
-    return ResponseEntity.ok("Payment approved successfully");
+    try {
+      paymentService.approvePayment(pgToken);
+      return ResponseEntity.status(HttpStatus.OK).body("결제 완료");
+    } catch (Exception ex) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("결제가 취소되었습니다.");
+    }
   }
 
   @GetMapping("/kakaopay/fail")
   public ResponseEntity<String> paymentFail(@RequestParam("orderId") String orderId) {
     paymentService.orderFailure(orderId);
-    return ResponseEntity.badRequest().body("Payment failed");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("결제가 실패하였습니다.");
   }
 
   @GetMapping("/kakaopay/cancel")
   public ResponseEntity<String> paymentCancel(@RequestParam("orderId") String orderId) {
     paymentService.orderFailure(orderId);
-    return ResponseEntity.ok("Payment canceled");
+    return ResponseEntity.status(HttpStatus.OK).body("결제를 취소하셨습니다.");
   }
 
   @PutMapping("/{userId}/{orderId}/cancel")
