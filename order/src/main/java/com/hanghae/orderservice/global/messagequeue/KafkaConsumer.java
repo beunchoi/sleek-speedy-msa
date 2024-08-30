@@ -3,7 +3,6 @@ package com.hanghae.orderservice.global.messagequeue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.orderservice.domain.order.service.OrderService;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KafkaConsumer {
   private static final String HOST = "https://open-api.kakaopay.com";
   private final RestTemplate restTemplate = new RestTemplate();
-  private final KafkaProducer kafkaProducer;
-  private final OrderService orderService;
   private final RedisTemplate<String, String> redisTemplate;
-  private static final String STOCK_KEY_PREFIX = "product:stock:";
 
   @KafkaListener(topics = "payment-topic")
   @Transactional
@@ -66,8 +62,8 @@ public class KafkaConsumer {
     params.put("total_amount", map.get("totalPrice")); // 상품 총액
     params.put("tax_free_amount", "0"); // 비과세 금액
     params.put("approval_url", "http://localhost:8080/order-service/kakaopay/approval"); // 결제 성공 시 리다이렉트 URL
-    params.put("fail_url", "http://localhost:8080/order-service/kakaopay/fail"); // 결제 실패 시 리다이렉트 URL
-    params.put("cancel_url", "http://localhost:8080/order-service/kakaopay/cancel"); // 결제 취소 시 리다이렉트 URL
+    params.put("fail_url", "http://localhost:8080/order-service/kakaopay/fail?orderId=" + map.get("orderId")); // 결제 실패 시 리다이렉트 URL
+    params.put("cancel_url", "http://localhost:8080/order-service/kakaopay/cancel?orderId=" + map.get("orderId")); // 결제 취소 시 리다이렉트 URL
 
     // URI 설정
     URI uri = UriComponentsBuilder
@@ -84,11 +80,13 @@ public class KafkaConsumer {
     String orderId = map.get("orderId").toString();
     String userId = map.get("userId").toString();
     String productId = map.get("productId").toString();
+    String quantity = map.get("quantity").toString();
 
     redisTemplate.opsForValue().set("tid", tid);
     redisTemplate.opsForValue().set("orderId", orderId);
     redisTemplate.opsForValue().set("userId", userId);
     redisTemplate.opsForValue().set("productId", productId);
+    redisTemplate.opsForValue().set("quantity", quantity);
     log.info(response.getBody().get("next_redirect_pc_url").toString());
   }
 
