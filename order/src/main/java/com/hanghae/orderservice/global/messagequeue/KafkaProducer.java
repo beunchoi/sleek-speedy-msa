@@ -53,8 +53,8 @@ public class KafkaProducer {
 //    }
 //  }
 
-  public void sendFailureMessage(String originalMessage) {
-    kafkaTemplate.send("payment-failure-topic", originalMessage);
-    log.info("Payment failure message sent to Kafka: {}", originalMessage);
-  }
+//  public void sendFailureMessage(String originalMessage) {
+//    kafkaTemplate.send("payment-failure-topic", originalMessage);
+//    log.info("Payment failure message sent to Kafka: {}", originalMessage);
+//  }
 }

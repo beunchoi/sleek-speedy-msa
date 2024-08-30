@@ -17,7 +17,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -80,8 +79,6 @@ public class PaymentService {
     }
   }
 
-  //  @Transactional
-//  @KafkaListener(topics = "payment-success-topic")
   public void paymentSuccess(String productId, String orderId, Integer quantity) {
     String stockKey = STOCK_KEY_PREFIX + productId;
 
@@ -115,7 +112,6 @@ public class PaymentService {
   }
 
   @Transactional
-  @KafkaListener(topics = "payment-failure-topic")
   public void orderFailure(String orderId) {
     Order order = orderRepository.findByOrderId(orderId)
         .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));

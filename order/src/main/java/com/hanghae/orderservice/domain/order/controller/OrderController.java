@@ -28,7 +28,6 @@ public class OrderController {
 
   private final OrderService orderService;
   private final Environment env;
-  private final KafkaProducer kafkaProducer;
   private final PaymentService paymentService;
 
   @GetMapping("/health_check")
@@ -53,14 +52,14 @@ public class OrderController {
   }
 
   @GetMapping("/kakaopay/fail")
-  public ResponseEntity<String> paymentFail() {
-    kafkaProducer.sendFailureMessage("failure");
+  public ResponseEntity<String> paymentFail(@RequestParam("orderId") String orderId) {
+    paymentService.orderFailure(orderId);
     return ResponseEntity.badRequest().body("Payment failed");
   }
 
   @GetMapping("/kakaopay/cancel")
-  public ResponseEntity<String> paymentCancel() {
-    kafkaProducer.sendFailureMessage("cancel");
+  public ResponseEntity<String> paymentCancel(@RequestParam("orderId") String orderId) {
+    paymentService.orderFailure(orderId);
     return ResponseEntity.ok("Payment canceled");
   }
 
