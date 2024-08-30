@@ -43,4 +43,9 @@ public class ProductService {
     redisTemplate.opsForValue().set(STOCK_KEY_PREFIX + productId,
         String.valueOf(product.getStock()));
   }
+
+  public String getProductStock(String productId) {
+
+    return redisTemplate.opsForValue().get(STOCK_KEY_PREFIX + productId);
+  }
 }

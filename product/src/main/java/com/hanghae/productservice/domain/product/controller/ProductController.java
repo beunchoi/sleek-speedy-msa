@@ -53,4 +53,10 @@ public class ProductController {
     ProductResponseDto response = productService.getProductByProductId(productId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
+
+  @GetMapping("/{productId}/stock")
+  public ResponseEntity<String> getProductStock(@PathVariable String productId) {
+    String productStock = productService.getProductStock(productId);
+    return ResponseEntity.status(HttpStatus.OK).body(productStock);
+  }
 }
