@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,6 +33,8 @@ public class PaymentService {
   private final RestTemplate restTemplate = new RestTemplate();
   private static final String STOCK_KEY_PREFIX = "product:stock:";
   private static final String HOST = "https://open-api.kakaopay.com";
+  @Value("${secret.key}")
+  private String secretKey;
 
   @Transactional
   public void approvePayment(String pgToken) {
@@ -50,7 +53,7 @@ public class PaymentService {
       this.paymentSuccess(productId, orderId, Integer.valueOf(quantity));
 
       HttpHeaders headers = new HttpHeaders();
-      headers.add("Authorization", "SECRET_KEY " + "DEVCFD942EFA3112904ED6632AC7F492D0E4BC34"); // 실제 Secret Key를 사용해야 합니다.
+      headers.add("Authorization", "SECRET_KEY " + secretKey); // 실제 Secret Key를 사용해야 합니다.
       headers.add("Content-Type", "application/json");
 
       Map<String, Object> params = new HashMap<>();
@@ -101,12 +104,13 @@ public class PaymentService {
             1, stockKey.getBytes(StandardCharsets.UTF_8),
             String.valueOf(quantity).getBytes(StandardCharsets.UTF_8)));
 
-    if (result != null && result == -1) {
-      throw new IllegalStateException("재고가 부족합니다.");
-    }
-
     Order order = orderRepository.findByOrderId(orderId)
         .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+
+    if (result != null && result == -1) {
+      order.failure();
+      throw new IllegalStateException("재고가 부족합니다.");
+    }
 
     order.success();
   }

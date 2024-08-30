@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +27,8 @@ public class KafkaConsumer {
   private static final String HOST = "https://open-api.kakaopay.com";
   private final RestTemplate restTemplate = new RestTemplate();
   private final RedisTemplate<String, String> redisTemplate;
+  @Value("${secret.key}")
+  private String secretKey;
 
   @KafkaListener(topics = "payment-topic")
   @Transactional
@@ -49,7 +52,7 @@ public class KafkaConsumer {
 
     // HTTP 헤더 설정
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "SECRET_KEY " + "DEVCFD942EFA3112904ED6632AC7F492D0E4BC34"); // 카카오 API 키
+    headers.add("Authorization", "SECRET_KEY " + secretKey); // 카카오 API 키
     headers.add("Content-Type", "application/json");
 
     // 결제 준비 API 요청 데이터 설정
