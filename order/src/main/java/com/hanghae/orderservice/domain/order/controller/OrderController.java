@@ -3,9 +3,9 @@ package com.hanghae.orderservice.domain.order.controller;
 import com.hanghae.orderservice.domain.order.dto.CancelResponse;
 import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
-import com.hanghae.orderservice.domain.order.dto.PaymentRequest;
 import com.hanghae.orderservice.domain.order.dto.ReturnRequestResponse;
 import com.hanghae.orderservice.domain.order.service.OrderService;
+import com.hanghae.orderservice.domain.order.service.PaymentService;
 import com.hanghae.orderservice.global.messagequeue.KafkaProducer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class OrderController {
   private final OrderService orderService;
   private final Environment env;
   private final KafkaProducer kafkaProducer;
+  private final PaymentService paymentService;
 
   @GetMapping("/health_check")
   public String status() {
@@ -40,10 +41,6 @@ public class OrderController {
 
     OrderResponseDto response = orderService.createOrder(request, userId);
 
-//    kafkaProducer.send("product-topic", response);
-//    orderService.updateStock(request.getProductId(), request.getQuantity());
-    kafkaProducer.send("payment-topic", new PaymentRequest(response, userId));
-
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -51,7 +48,7 @@ public class OrderController {
   public ResponseEntity<String> approvePayment(
       @RequestParam("pg_token") String pgToken) {
 
-    orderService.approvePayment(pgToken);
+    paymentService.approvePayment(pgToken);
     return ResponseEntity.ok("Payment approved successfully");
   }
 

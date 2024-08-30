@@ -28,15 +28,18 @@ public class KafkaProducer {
 //  }
 
   public void send(String topic, PaymentRequest request) {
-    ObjectMapper mapper = new ObjectMapper();
-    String jsonInString = "";
-    try {
-      jsonInString = mapper.writeValueAsString(request);
-    } catch (JsonProcessingException ex) {
-      ex.printStackTrace();
-    }
-
-    kafkaTemplate.send(topic, jsonInString);
+    kafkaTemplate.executeInTransaction(k -> {
+      ObjectMapper mapper = new ObjectMapper();
+      String jsonInString = "";
+      try {
+        jsonInString = mapper.writeValueAsString(request);
+      } catch (JsonProcessingException ex) {
+        log.error("json 변환 실패: " + ex.getMessage());
+        return false;
+      }
+      k.send(topic, jsonInString);
+      return true;
+    });
     log.info("kafka producer 가 데이터를 보냈습니다. " + request);
   }
 
