@@ -43,13 +43,6 @@ public class KafkaConsumer {
       ex.printStackTrace();
     }
 
-//    String productId = (String) map.get("productId");
-//    Integer quantity = (Integer) map.get("quantity");
-//
-//    String stockKey = STOCK_KEY_PREFIX + productId;
-//    String value = redisTemplate.opsForValue().get(stockKey);
-//    Integer stock = value != null ? Integer.parseInt(value) : 0;
-
     // HTTP 헤더 설정
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "SECRET_KEY " + secretKey); // 카카오 API 키
@@ -92,22 +85,4 @@ public class KafkaConsumer {
     redisTemplate.opsForValue().set("quantity", quantity);
     log.info(response.getBody().get("next_redirect_pc_url").toString());
   }
-
-//  @KafkaListener(topics = "payment-confirmation-topic")
-//  public void handleOrderConfirmation(String kafkaMessage) throws JsonProcessingException {
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    JsonNode rootNode = objectMapper.readTree(kafkaMessage);
-//    JsonNode requestNode = rootNode.path("request");
-//    String productId = requestNode.path("productId").asText();
-//    String orderId = requestNode.path("orderId").asText();
-//    Integer quantity = requestNode.path("quantity").asInt();
-//
-//    if (kafkaMessage.contains("approved_at")) {
-//      // 결제 성공 시 재고 감소 및 주문 확정
-//      orderService.orderSuccess(productId, quantity, orderId);
-//    } else {
-//      // 결제 실패 시 주문 취소
-//      orderService.orderFailure(orderId);
-//    }
-//  }
 }

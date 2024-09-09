@@ -36,6 +36,5 @@ public class KafkaConsumer {
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
     product.updateStock(product.getStock() - (Integer) map.get("quantity"));
-
   }
 }
