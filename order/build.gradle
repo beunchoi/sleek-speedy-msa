@@ -50,11 +50,13 @@ dependencies {
 //    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 //    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-    // Feign Client
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-//    // Kafka
-//    implementation 'org.springframework.kafka:spring-kafka'
-    
+    // Resilience4j
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot3', version: '2.2.0'
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '2.2.0'
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '2.2.0'
+
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
     // Sleuth
     implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
