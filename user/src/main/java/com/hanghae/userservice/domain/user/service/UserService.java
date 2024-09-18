@@ -86,7 +86,7 @@ public class UserService {
     return new UserResponseDto(user, response);
   }
 
-  public List<UserResponseDto> getUserByAll() {
+  public List<UserResponseDto> getAllUsers() {
     List<User> users = userRepository.findAll();
 
     return users.stream().map(UserResponseDto::new).collect(Collectors.toList());
