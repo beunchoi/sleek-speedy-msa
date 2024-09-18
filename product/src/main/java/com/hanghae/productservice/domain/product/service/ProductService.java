@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,14 @@ public class ProductService {
     Product product = productRepository.findByProductId(productId)
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
+    return new ProductResponseDto(product);
+  }
+  @Transactional
+  public ProductResponseDto incrementProductStock(String productId) {
+    Product product = productRepository.findByProductId(productId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+
+    product.incrementStock();
     return new ProductResponseDto(product);
   }
 
