@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.userservice.domain.user.dto.LoginRequestDto;
 import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
+import com.hanghae.userservice.domain.user.service.TokenService;
 import com.hanghae.userservice.domain.user.service.UserService;
 import com.hanghae.userservice.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,12 +24,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
   private final JwtUtil jwtUtil;
   private final UserService userService;
-  Environment env;
+  private final TokenService tokenService;
+  // Header KEY 값
+  public static final String AUTHORIZATION_HEADER = "Authorization";
+  // Token 식별자
+  public static final String BEARER_PREFIX = "Bearer ";
 
-  public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService, Environment env) {
+  public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService,
+      TokenService tokenService, Environment env) {
     this.jwtUtil = jwtUtil;
     this.userService = userService;
-    this.env = env;
+    this.tokenService = tokenService;
     setFilterProcessesUrl("/user-service/login");
   }
 
@@ -57,10 +64,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     UserResponseDto userDetails = userService.getUserDetailsByEmail(username);
 
-    String token = jwtUtil.createToken(userDetails.getUserId(), role); // 4
+    String accessToken = jwtUtil.createAccessToken(userDetails.getUserId(), role); // 4
+    String refreshToken = jwtUtil.createRefreshToken(userDetails.getUserId());
 
-    response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+    Cookie cookieRefreshToken = new Cookie("Refresh-token", refreshToken);
+    cookieRefreshToken.setPath("/user-service/token");
+    cookieRefreshToken.setMaxAge(24 * 60 * 60);
+//    cookieRefreshToken.setHttpOnly(true); // 자바스크립트에서 쿠키 접근 차단
+//    cookieRefreshToken.setSecure(true); // Https 연결에서만 쿠키 전송
+
+    response.addHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + accessToken);
     response.addHeader("userId", userDetails.getUserId());
+    response.addCookie(cookieRefreshToken);
+
+    tokenService.saveRefreshToken(userDetails.getUserId(), refreshToken);
   }
 
   @Override

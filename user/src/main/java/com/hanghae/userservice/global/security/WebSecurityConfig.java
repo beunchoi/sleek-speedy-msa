@@ -1,5 +1,6 @@
 package com.hanghae.userservice.global.security;
 
+import com.hanghae.userservice.domain.user.service.TokenService;
 import com.hanghae.userservice.domain.user.service.UserService;
 import com.hanghae.userservice.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class WebSecurityConfig {
   private final UserDetailsServiceImpl userDetailsService;
   private final AuthenticationConfiguration authenticationConfiguration;
   private final UserService userService;
+  private final TokenService tokenService;
   private final Environment env;
 
   @Bean
@@ -33,7 +35,7 @@ public class WebSecurityConfig {
 
   @Bean
   public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-    JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userService, env);
+    JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userService, tokenService, env);
     filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
     return filter;
   }

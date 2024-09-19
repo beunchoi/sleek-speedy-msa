@@ -98,4 +98,11 @@ public class UserService {
 
     return new UserResponseDto(user);
   }
+
+  public UserRoleEnum getUserRole(String userId) {
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+    return user.getRole();
+  }
 }
