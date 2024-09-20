@@ -1,4 +1,4 @@
-package com.hanghae.userservice.global.response;
+package com.hanghae.paymentservice.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
