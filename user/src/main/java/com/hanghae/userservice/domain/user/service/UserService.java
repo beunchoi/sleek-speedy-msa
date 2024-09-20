@@ -8,13 +8,13 @@ import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.repository.UserRepository;
-import com.hanghae.userservice.domain.wish.repository.WishRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +30,8 @@ public class UserService {
   private final OrderServiceClient orderServiceClient;
   private final CircuitBreakerFactory circuitBreakerFactory;
 
-  private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+  @Value("${admin.token}")
+  private String ADMIN_TOKEN;
 
   public SignupResponseDto signup(SignupRequestDto request) {
     String userId = UUID.randomUUID().toString();
