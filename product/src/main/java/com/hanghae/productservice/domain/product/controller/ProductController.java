@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,9 +30,9 @@ public class ProductController {
   }
 
   @PostMapping("/{productId}/initialize")
-  public ResponseEntity initializeStock(@PathVariable String productId) {
+  public ResponseEntity<String> initializeStock(@PathVariable String productId) {
     productService.initializeStock(productId);
-    return ResponseEntity.status(HttpStatus.OK).build();
+    return ResponseEntity.status(HttpStatus.OK).body("재고 초기화 성공");
   }
 
   @PostMapping("/products")
@@ -58,5 +59,10 @@ public class ProductController {
   public ResponseEntity<String> getProductStock(@PathVariable String productId) {
     String productStock = productService.getProductStock(productId);
     return ResponseEntity.status(HttpStatus.OK).body(productStock);
+  }
+  @PutMapping("/{productId}/increment")
+  public ResponseEntity<ProductResponseDto> incrementProductStock(@PathVariable String productId) {
+    ProductResponseDto response = productService.incrementProductStock(productId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }

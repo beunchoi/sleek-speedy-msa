@@ -9,20 +9,13 @@ public class OrderResponseDto {
   private Integer quantity;
   private Integer price;
   private Integer totalPrice;
+  private String userId;
   private LocalDateTime createdAt;
   private String orderId;
 
-  public OrderResponseDto(Order order) {
-    this.productId = order.getProductId();
-    this.quantity = order.getQuantity();
-    this.price = order.getPrice();
-    this.totalPrice = order.getTotalPrice();
-    this.createdAt = order.getCreatedAt();
-    this.orderId = order.getOrderId();
-  }
-
-  public OrderResponseDto(String productId, Integer quantity) {
+  public OrderResponseDto(String productId, String orderId, Integer quantity) {
     this.productId = productId;
+    this.orderId = orderId;
     this.quantity = quantity;
   }
 }

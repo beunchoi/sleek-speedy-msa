@@ -1,7 +1,9 @@
 package com.hanghae.paymentservice.domain.payment.service;
 
+import com.hanghae.paymentservice.domain.payment.event.FailedPaymentEvent;
 import com.hanghae.paymentservice.domain.payment.dto.OrderResponseDto;
-import com.hanghae.paymentservice.domain.payment.dto.PaymentResponseDto;
+import com.hanghae.paymentservice.domain.payment.event.SavePaymentEvent;
+import com.hanghae.paymentservice.domain.payment.event.SaveProductStockEvent;
 import com.hanghae.paymentservice.domain.payment.entity.Payment;
 import com.hanghae.paymentservice.domain.payment.repository.PaymentRepository;
 import java.time.Duration;
@@ -12,23 +14,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PaymentService {
-  private final OrderRepository orderRepository;
   private final RedisTemplate<String, String> redisTemplate;
   private final RedissonClient redissonClient;
   private final RabbitTemplate rabbitTemplate;
@@ -36,115 +34,60 @@ public class PaymentService {
   private final PaymentRepository paymentRepository;
   private static final String STOCK_KEY_PREFIX = "product:stock:";
   private static final String HOST = "https://open-api.kakaopay.com";
+  private static final String PORT = "http://localhost:8080";
   @Value("${secret.key}")
   private String secretKey;
-
-  public Mono<ResponseEntity<Map<String, Object>>> requestPayment(String orderId, String userId,
-      String productId, String quantity, String totalPrice) {
-
-    // HTTP 헤더 설정
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "SECRET_KEY " + secretKey); // 카카오 API 키
-    headers.add("Content-Type", "application/json");
-
-    // 결제 준비 API 요청 데이터 설정
-    Map<String, Object> params = new HashMap<>();
-    params.put("cid", "TC0ONETIME"); // 가맹점 코드
-    params.put("partner_order_id", orderId); // 주문번호
-    params.put("partner_user_id", userId); // 회원 ID
-    params.put("item_name", productId); // 상품명
-    params.put("quantity", quantity); // 상품 수량
-    params.put("total_amount", totalPrice); // 상품 총액
-    params.put("tax_free_amount", "0"); // 비과세 금액
-    params.put("approval_url",
-        "http://localhost:8080/order-service/kakaopay/approval"); // 결제 성공 시 리다이렉트 URL
-    params.put("fail_url", "http://localhost:8080/order-service/kakaopay/fail?orderId="
-        + orderId); // 결제 실패 시 리다이렉트 URL
-    params.put("cancel_url", "http://localhost:8080/order-service/kakaopay/cancel?orderId="
-        + orderId); // 결제 취소 시 리다이렉트 URL
-
-    return webClient.post()
-        .uri(HOST + "/online/v1/payment/ready")
-        .headers(httpHeaders -> httpHeaders.addAll(headers))
-        .bodyValue(params)
-        .retrieve()
-        .bodyToMono(Map.class)  // 응답을 비동기로 처리
-        .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))) // 1초 간격으로 최대 3번 재시도
-        .doOnError(ex -> log.error("결제 요청 실패: " + ex.getMessage())) // 에러 처리
-        .doOnSuccess(response -> {
-          log.info("결제 요청 성공!");
-        })
-        .flatMap(response -> {
-          // 결제 API 응답 후 Redis에 결제 정보 저장
-          String tid = response.get("tid").toString();
-          String pgToken = response.get("pg_token").toString();
-
-          try {
-            PaymentResponseDto payment = new PaymentResponseDto(tid, orderId, userId, productId, quantity, pgToken);
-            rabbitTemplate.convertAndSend("payment-queue", payment);
-          } catch (Exception e) {
-            log.error("메시지 전송 실패");
-            return Mono.error(new Exception("메시지 전송 실패"));
-          }
-
-          String nextRedirectPcUrl = response.get("next_redirect_pc_url").toString();
-          Map<String, Object> result = new HashMap<>();
-          result.put("next_redirect_pc_url", nextRedirectPcUrl);
-          result.put("pg_token", pgToken);
-
-          log.info("결제 URL: {}", response.get("next_redirect_pc_url").toString());
-          return Mono.just(ResponseEntity.ok(result));
-        });
-  }
+  @Value("${message.queue.product}")
+  private String queueProduct;
+  @Value("${message2.err.exchange}")
+  private String exchangeErr;
+  @Value("${message2.queue.err.order}")
+  private String queueErrOrder;
 
   @Transactional
-  public void approvePayment(String pgToken) {
+  public void approvePayment(String pgToken, String orderId) {
     String lockKey = "payment:lock:";
     RLock lock = redissonClient.getLock(lockKey);
 
     try {
-      boolean isLocked = lock.tryLock(7, 3, TimeUnit.SECONDS);
+      boolean isLocked = lock.tryLock(7, 2, TimeUnit.SECONDS);
       if (!isLocked) {
         log.error("락을 얻지 못했습니다.");
         throw new RuntimeException("락을 얻지 못했습니다.");
       }
 
-      Payment payment = paymentRepository.findAllByPgToken(pgToken)
+      Payment payment = paymentRepository.findByOrderId(orderId)
           .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다."));
 
       String tid = payment.getTid();
-      String orderId = payment.getOrderId();
       String userId = payment.getUserId();
       String productId = payment.getProductId();
       String quantity = payment.getQuantity();
 
       this.successPayment(productId, orderId, Integer.valueOf(quantity));
 
-//      HttpHeaders headers = new HttpHeaders();
-//      headers.add("Authorization", "SECRET_KEY " + secretKey); // 실제 Secret Key를 사용해야 합니다.
-//      headers.add("Content-Type", "application/json");
-//
-//      Map<String, Object> params = new HashMap<>();
-//      params.put("cid", "TC0ONETIME");
-//      params.put("tid", tid);
-//
-//
-//      params.put("partner_order_id", orderId);
-//      params.put("partner_user_id", userId);
-//      params.put("pg_token", pgToken);
-//      params.put("payload", productId);
-//
-//      URI uri = UriComponentsBuilder
-//          .fromUriString(HOST)
-//          .path("/online/v1/payment/approve")
-//          .build()
-//          .toUri();
-//
-//      HttpEntity<Map<String, Object>> entity = new HttpEntity<>(params, headers);
-//
-//      ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.POST, entity, Map.class);
-//      Map<String, Object> responseBody = response.getBody();
-//      log.info("Payment approved successfully: {}", responseBody);
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Authorization", "SECRET_KEY " + secretKey); // 실제 Secret Key를 사용해야 합니다.
+      headers.add("Content-Type", "application/json");
+
+      Map<String, Object> params = new HashMap<>();
+      params.put("cid", "TC0ONETIME");
+      params.put("tid", tid);
+      params.put("partner_order_id", orderId);
+      params.put("partner_user_id", userId);
+      params.put("pg_token", pgToken);
+      params.put("payload", productId);
+
+      webClient.post()
+          .uri(HOST + "/online/v1/payment/approve")
+          .headers(httpHeaders -> httpHeaders.addAll(headers))
+          .bodyValue(params)
+          .retrieve()
+          .bodyToMono(Map.class)
+          .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)))
+          .doOnError(ex -> log.error("결제 승인 요청 실패: " + ex.getMessage()))
+          .subscribe();
+
     } catch (InterruptedException e) {
       log.error("락 사용 중 인터럽트 발생: {}", e.getMessage());
       throw new RuntimeException(e);
@@ -163,9 +106,7 @@ public class PaymentService {
 
     if (stock == null) {
       // 재고가 없는 경우 처리
-      Order order = orderRepository.findByOrderId(orderId)
-          .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
-      order.failure();
+      this.orderFailure(orderId);
       return;
     }
 
@@ -173,9 +114,7 @@ public class PaymentService {
     int stockValue = Integer.parseInt(stock);
     if (stockValue < quantity) {
       // 재고 부족
-      Order order = orderRepository.findByOrderId(orderId)
-          .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
-      order.failure();
+      this.orderFailure(orderId);
         throw new IllegalStateException("재고가 부족합니다.");
     } else {
       // 재고 감소 처리
@@ -200,8 +139,7 @@ public class PaymentService {
 //            1, stockKey.getBytes(StandardCharsets.UTF_8),
 //            String.valueOf(quantity).getBytes(StandardCharsets.UTF_8)));
 
-      Order order = orderRepository.findByOrderId(orderId)
-          .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+      this.orderSuccess(orderId);
 
 //    if (result != null && result == -1) {
 //      order.failure();
@@ -210,34 +148,59 @@ public class PaymentService {
 //      order.success();
 //      rabbitMQProducer.sendToProduct("product-topic", new OrderResponseDto(productId, Integer.valueOf(quantity)));
 //    }
-      order.success();
-      rabbitTemplate.convertAndSend("product-queue",
-          new OrderResponseDto(productId, Integer.valueOf(quantity)));
-//      Product product = productRepository.findByProductId(productId)
-//          .orElseThrow(() -> new IllegalArgumentException("s"));
-//
-//      product.updateStock(product.getStock() - quantity);
+      rabbitTemplate.convertAndSend(queueProduct,
+          new SaveProductStockEvent(productId, orderId, Integer.valueOf(quantity)));
     }
   }
 
-  @RabbitListener(queues = "payment-queue")
-  public void savePayment(PaymentResponseDto responseDto) {
+  public void orderFailure(String orderId) {
+    webClient.put()
+        .uri(PORT + "/order-service/{orderId}/orders/failure", orderId)
+        .retrieve()
+        .bodyToMono(OrderResponseDto.class)
+        .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)))
+        .subscribe();
+  }
 
-    String tid = responseDto.getTid();
-    String orderId = responseDto.getOrderId();
-    String userId = responseDto.getUserId();
-    String productId = responseDto.getProductId();
-    String quantity = responseDto.getQuantity();
-    String pgToken = responseDto.getPgToken();
+  public void orderSuccess(String orderId) {
+    webClient.put()
+        .uri(PORT + "/order-service/{orderId}/orders/success", orderId)
+        .retrieve()
+        .bodyToMono(OrderResponseDto.class)
+        .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)))
+        .subscribe();
+  }
 
-    paymentRepository.save(new Payment(tid, orderId, userId, productId, quantity, pgToken));
+  public void savePayment(SavePaymentEvent event) {
+    Payment payment = new Payment(
+        event.getTid(),
+        event.getOrderId(),
+        event.getUserId(),
+        event.getProductId(),
+        event.getQuantity()
+    );
+
+    try {
+      paymentRepository.save(payment);
+    } catch (Exception e) {
+      this.rollbackPayment(new FailedPaymentEvent(
+          event.getUserId(),
+          event.getProductId(),
+          Integer.parseInt(event.getQuantity())
+      ));
+    }
   }
 
   @Transactional
-  public void orderFailure(String orderId) {
-    Order order = orderRepository.findByOrderId(orderId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+  public void rollbackPayment(FailedPaymentEvent event) {
+    log.info("Payment Rollback");
+    Payment payment = paymentRepository.findByOrderId(event.getOrderId())
+        .orElse(null);
 
-    order.failure();
+    if (payment != null) {
+      payment.deletePayment();
+    }
+
+    rabbitTemplate.convertAndSend(exchangeErr, queueErrOrder, event);
   }
 }

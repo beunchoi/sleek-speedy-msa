@@ -7,10 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "payment")
 @Getter
+@NoArgsConstructor
 public class Payment {
 
   @Id
@@ -27,14 +29,17 @@ public class Payment {
   @Column
   private String quantity;
   @Column
-  private String pgToken;
+  private boolean availability = true;
 
-  public Payment(String tid, String orderId, String userId, String productId, String quantity, String pgToken) {
+  public Payment(String tid, String orderId, String userId, String productId, String quantity) {
     this.tid = tid;
     this.orderId = orderId;
     this.userId = userId;
     this.productId = productId;
     this.quantity = quantity;
-    this.pgToken = pgToken;
+  }
+
+  public void deletePayment() {
+    this.availability = false;
   }
 }

@@ -10,6 +10,7 @@ public class OrderResponseDto {
   private Integer quantity;
   private Integer price;
   private Integer totalPrice;
+  private String userId;
   private LocalDateTime createdAt;
   private String orderId;
 
@@ -20,5 +21,6 @@ public class OrderResponseDto {
     this.totalPrice = order.getTotalPrice();
     this.createdAt = order.getCreatedAt();
     this.orderId = order.getOrderId();
+    this.userId = order.getUserId();
   }
 }
