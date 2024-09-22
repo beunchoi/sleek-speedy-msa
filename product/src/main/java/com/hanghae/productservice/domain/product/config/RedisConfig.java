@@ -1,4 +1,4 @@
-package com.hanghae.paymentservice.global.config;
+package com.hanghae.productservice.domain.product.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

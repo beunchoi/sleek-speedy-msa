@@ -1,4 +1,4 @@
-package com.hanghae.orderservice.global.config;
+package com.hanghae.paymentservice.domain.payment.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

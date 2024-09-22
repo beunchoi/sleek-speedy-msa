@@ -1,4 +1,4 @@
-package com.hanghae.paymentservice.domain.payment.dto;
+package com.hanghae.orderservice.domain.order.dto;
 
 import lombok.Data;
 

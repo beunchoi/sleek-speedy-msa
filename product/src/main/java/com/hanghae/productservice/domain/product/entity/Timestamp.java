@@ -1,4 +1,4 @@
-package com.hanghae.paymentservice.global.util;
+package com.hanghae.productservice.domain.product.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

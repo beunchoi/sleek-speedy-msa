@@ -1,4 +1,4 @@
-package com.hanghae.orderservice.global.config;
+package com.hanghae.orderservice.domain.order.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
