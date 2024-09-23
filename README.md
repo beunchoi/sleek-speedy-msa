@@ -9,26 +9,13 @@
         한정 수량 상품 선착순 구매 서비스
     </p>
     <p align="center">
-        2024.08 ~ 2024.09
+        2024.08 ~ 2024.09 (5주)
     </p>
 </div>
 
 ## 프로젝트 소개
 sleek speedy는 대규모 트래픽을 효율적으로 처리하여 한정 수량의 상품에 대한 선착순 구매를 지원하는 서비스입니다. 
 사용자는 원하는 상품을 위시리스트에 담고 정해진 시간에 주문 및 결제를 진행하여 선착순으로 빠르게 결제를 완료하면 상품을 구매할 수 있습니다.
-
-
-
-### 개발환경
-
-- <img src="https://img.shields.io/badge/Framework-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"><img src="https://img.shields.io/badge/3.3.2-515151?style=for-the-badge">
-- <img src="https://img.shields.io/badge/Security-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"/>
-- <img src="https://img.shields.io/badge/Language-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/java-%23ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/21-515151?style=for-the-badge">
-- <img src="https://img.shields.io/badge/DataBase-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-- <img src="https://img.shields.io/badge/DataBase-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white">
-- <img src="https://img.shields.io/badge/Platform-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/Apache%20Kafka-%23A020F0?style=for-the-badge&logo=apachekafka">
-- <img src="https://img.shields.io/badge/Platform-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
-
 
 ## 서비스 아키텍처
 
@@ -44,6 +31,30 @@ sleek speedy는 대규모 트래픽을 효율적으로 처리하여 한정 수�
 6. Kafka를 활용하여 이벤트를 비동기식으로 처리
 7. JMX Exporter, Prometheus, Grafana를 이용한 Kafka 모니터링
 8. Spring Scheduler를 통해 주문 및 배송 관리
+
+## 개발환경
+
+### Framework / Language
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"><img src="https://img.shields.io/badge/3.3.2-515151?style=for-the-badge">
+<img src="https://img.shields.io/badge/Spring Cloud-6DB33F?style=for-the-badge&logo=spring&logoColor=white"><img src="https://img.shields.io/badge/2023.0.3-515151?style=for-the-badge">
+<img src="https://img.shields.io/badge/springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"/>
+<img src="https://img.shields.io/badge/java-%23ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/21-515151?style=for-the-badge">
+
+### Libraries
+<img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Data JPA"> <img src="https://img.shields.io/badge/WebClient-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="WebClient"> <img src="https://img.shields.io/badge/Redisson-FF0000?style=for-the-badge&logo=redis&logoColor=white" alt="Redisson"> <img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens"> <img src="http://img.shields.io/badge/google smtp-4285F4?style=for-the-badge&logo=google&logoColor=white"> <img src="https://img.shields.io/badge/kakaopay OpenApi-ffcd00.svg?style=for-the-badge&logo=Kakao&logoColor=000000">
+
+
+### Database
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white">
+
+### Messaging
+<img src="https://img.shields.io/badge/Rabbitmq-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white">
+
+### DevOps
+<img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
+
+### Test Tools
+<img src="http://img.shields.io/badge/Jmeter-D22128?style=for-the-badge&logo=apachejmeter&logoColor=white"> <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white">
 
 ## 성능 최적화 개선
 
