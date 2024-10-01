@@ -38,9 +38,6 @@ public class User {
   @Column(nullable = false, unique = true)
   private String phoneNum;
 
-  @Column(nullable = false, unique = true)
-  private String address;
-
   @Column(nullable = false)
   private String profile = "자기소개 해주세요";
 
@@ -54,7 +51,6 @@ public class User {
     this.password = password;
     this.name = request.getName();
     this.phoneNum = request.getPhoneNum();
-    this.address = request.getAddress();
     this.role = role;
   }
 }

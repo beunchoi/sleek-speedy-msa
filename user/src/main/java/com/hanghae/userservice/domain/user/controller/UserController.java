@@ -1,5 +1,7 @@
 package com.hanghae.userservice.domain.user.controller;
 
+import com.hanghae.userservice.domain.user.dto.AddressRequestDto;
+import com.hanghae.userservice.domain.user.dto.AddressResponseDto;
 import com.hanghae.userservice.domain.user.dto.MailAuthDto;
 import com.hanghae.userservice.domain.user.dto.MailRequestDto;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
@@ -19,9 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,16 +82,30 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @GetMapping("/users")
+  @PostMapping("/users/address")
+  public ResponseEntity<AddressResponseDto> createAddress(@RequestBody AddressRequestDto requestDto, @RequestHeader("X-User-Id") String userId) {
+    AddressResponseDto response = userService.createAddress(requestDto, userId);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  @GetMapping("/users/userlist")
   public ResponseEntity<List<UserResponseDto>> getAllUsers() {
     List<UserResponseDto> users = userService.getAllUsers();
 
     return ResponseEntity.status(HttpStatus.OK).body(users);
   }
 
-  @GetMapping("/users/{userId}")
-  public ResponseEntity<UserResponseDto> getUserByUserId(@PathVariable String userId) {
+  @GetMapping("/users")
+  public ResponseEntity<UserResponseDto> getUserByUserId(@RequestHeader("X-User-Id") String userId) {
     UserResponseDto response = userService.getUserByUserId(userId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  @GetMapping("/users/address")
+  public ResponseEntity<AddressResponseDto> getAddress(@RequestHeader("X-User-Id") String userId) {
+    AddressResponseDto response = userService.getAddress(userId);
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
