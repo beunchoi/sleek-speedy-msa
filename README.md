@@ -21,6 +21,8 @@ sleek speedy는 대규모 트래픽을 효율적으로 처리하여 한정 수�
 ![아키텍처4](https://github.com/user-attachments/assets/9f518654-dcda-407d-b5fb-c550a4517ca6)
 
 ### 🗂️ ERD DIAGRAM
+![스크린샷 2024-10-02 123413](https://github.com/user-attachments/assets/a34e9504-d58c-4e22-a9e4-a0c1753776ce)
+
 ### 📜 API 명세서
 
 ## 개발환경
