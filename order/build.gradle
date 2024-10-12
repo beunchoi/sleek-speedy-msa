@@ -28,8 +28,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
@@ -40,31 +39,8 @@ dependencies {
     // Spring WebFlux 의존성
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-//    // Spring Security
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-//    testImplementation 'org.springframework.security:spring-security-test'
-//
-//    // JWT
-//    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
-//    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-
-    // Resilience4j
-    implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot3', version: '2.2.0'
-    implementation group: 'io.github.resilience4j', name: 'resilience4j-retry', version: '2.2.0'
-    implementation group: 'io.github.resilience4j', name: 'resilience4j-circuitbreaker', version: '2.2.0'
-
     // RabbitMQ
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
-
-    // Sleuth
-    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
-    // Zipkin
-    implementation 'org.springframework.cloud:spring-cloud-starter-zipkin:2.2.3.RELEASE'
-    // Spring Boot Actuator
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     implementation 'org.redisson:redisson:3.16.0'
 }
