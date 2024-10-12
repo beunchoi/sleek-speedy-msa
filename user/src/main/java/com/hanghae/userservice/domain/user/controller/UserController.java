@@ -34,16 +34,6 @@ public class UserController {
 
   private final MailService mailService;
   private final UserService userService;
-  private final Environment env;
-
-  @GetMapping("/health_check")
-  @Timed(value = "user.status", longTask = true)
-  public String status() {
-    return String.format("유저 서비스 정상 작동 중입니다."
-            + ", port(local.server.port)=" + env.getProperty("local.server.port")
-            + ", port(server.port)=" + env.getProperty("server.port")
-            + ", token secret=" + env.getProperty("token.secret"));
-  }
 
   /* Send Email: 인증번호 전송 버튼 click */
   @PostMapping("/users/sendEmail")

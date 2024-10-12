@@ -22,12 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
   private final ProductService productService;
-  private final Environment env;
-
-  @GetMapping("/health_check")
-  public String status() {
-    return String.format("상품 서비스 정상 작동 중입니다. 포트 번호 : %s", env.getProperty("local.server.port"));
-  }
 
   @PostMapping("/{productId}/initialize")
   public ResponseEntity<String> initializeStock(@PathVariable String productId) {
