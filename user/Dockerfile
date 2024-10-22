@@ -2,7 +2,7 @@ FROM amazoncorretto:21
 
 WORKDIR /app
 
-COPY build/libs/*.jar /app/user.jar
+COPY build/libs/user-0.0.1-SNAPSHOT.jar /app/user.jar
 
 ENV SPRING_PROFILES_ACTIVE=dev
 

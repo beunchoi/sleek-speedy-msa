@@ -1,40 +1,93 @@
 version: '3.8'
 services:
   user:
-    image: user
+    build:
+      context: ./user
+      dockerfile: Dockerfile
     depends_on:
-      db:
+      db_user:
         condition: service_healthy
     ports:
       - "8082:8082"
-
   product:
-    image: product
+    build:
+      context: ./product
+      dockerfile: Dockerfile
     depends_on:
-      db:
+      db_product:
         condition: service_healthy
     ports:
       - "8081:8081"
-
   order:
-    image: order
+    build:
+      context: ./order
+      dockerfile: Dockerfile
     depends_on:
-      db:
+      db_order:
         condition: service_healthy
     ports:
       - "8080:8080"
-
-  db:
+  payment:
+    build:
+      context: ./payment
+      dockerfile: Dockerfile
+    depends_on:
+      db_payment:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+  apigateway:
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+  discovery:
+    build:
+      context: ./discovery
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+  db_user:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql_user
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: sleek_speedy
+      MYSQL_DATABASE: db_user
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234 && sleep 5"]
       interval: 5s
       retries: 10
-
+  db_product:
+    image: mysql:8.0
+    container_name: mysql_product
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: db_product
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234 && sleep 5" ]
+      interval: 5s
+      retries: 10
+  db_order:
+    image: mysql:8.0
+    container_name: mysql_order
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: db_order
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234 && sleep 5" ]
+      interval: 5s
+      retries: 10
+  db_payment:
+    image: mysql:8.0
+    container_name: mysql_payment
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: db_payment
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p1234 && sleep 5" ]
+      interval: 5s
+      retries: 10
   redis:
     image: redis:latest
     container_name: redis
