@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -31,7 +30,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   public static final String BEARER_PREFIX = "Bearer ";
 
   public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService,
-      TokenService tokenService, Environment env) {
+      TokenService tokenService) {
     this.jwtUtil = jwtUtil;
     this.userService = userService;
     this.tokenService = tokenService;
@@ -74,7 +73,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //    cookieRefreshToken.setSecure(true); // Https 연결에서만 쿠키 전송
 
     response.addHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + accessToken);
-    response.addHeader("userId", userDetails.getUserId());
+    response.addHeader("X-User-Id", userDetails.getUserId());
     response.addCookie(cookieRefreshToken);
 
     tokenService.saveRefreshToken(userDetails.getUserId(), refreshToken);
