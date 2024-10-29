@@ -1,7 +1,6 @@
 package com.hanghae.orderservice.domain.order.entity;
 
 import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
-import com.hanghae.orderservice.global.util.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

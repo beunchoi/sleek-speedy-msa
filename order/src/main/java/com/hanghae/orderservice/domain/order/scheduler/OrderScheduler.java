@@ -1,5 +1,6 @@
 package com.hanghae.orderservice.domain.order.scheduler;
 
+import com.hanghae.orderservice.domain.order.dto.ProductResponseDto;
 import com.hanghae.orderservice.domain.order.entity.Order;
 import com.hanghae.orderservice.domain.order.entity.OrderStatus;
 import com.hanghae.orderservice.domain.order.repository.OrderRepository;
@@ -8,10 +9,13 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @RequiredArgsConstructor
 public class OrderScheduler {
   private final OrderRepository orderRepository;
+  private final WebClient webClient;
+  private static final String PORT = "http://localhost:8081";
 
   @Scheduled(cron = "0 0 0 * * ?")  // 매일 자정에 실행
   @Transactional
@@ -24,6 +28,11 @@ public class OrderScheduler {
           LocalDate.now().isAfter(order.getReturnRequestedDate().plusDays(1))) {
         order.completeReturn();
 //        product.incrementStock();
+        webClient.put()
+            .uri(PORT + "/product-service/{productId}/increment", order.getProductId())
+            .retrieve()
+            .bodyToMono(ProductResponseDto.class)
+            .block();
       } else {
         throw new IllegalStateException("반품 처리 조건이 맞지 않습니다.");
       }
