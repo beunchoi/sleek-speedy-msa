@@ -22,7 +22,5 @@ public class SignupRequestDto {
   private String password;
   @NotNull(message = "전화번호를 입력해주세요")
   private String phoneNum;
-  @NotNull(message = "주소를 입력해주세요")
-  private String address;
   private String adminToken = "";
 }

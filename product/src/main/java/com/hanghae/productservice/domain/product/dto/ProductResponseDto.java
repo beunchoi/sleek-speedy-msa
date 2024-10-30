@@ -23,5 +23,6 @@ public class ProductResponseDto {
     this.price = product.getPrice();
     this.category = product.getCategory();
     this.description = product.getDescription();
+    this.stock = product.getStock();
   }
 }

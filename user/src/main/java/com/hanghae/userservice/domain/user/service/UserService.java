@@ -33,7 +33,6 @@ public class UserService {
   private final UserRepository userRepository;
   private final AddressRepository addressRepository;
   private final OrderServiceClient orderServiceClient;
-  private final CircuitBreakerFactory circuitBreakerFactory;
 
   @Value("${admin.token}")
   private String ADMIN_TOKEN;
@@ -94,11 +93,11 @@ public class UserService {
 
 //    List<OrderResponseDto> response = orderServiceClient.getOrdersByUserId(userId);
 
-    CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
-    List<OrderResponseDto> response = circuitBreaker.run(() -> orderServiceClient.getOrdersByUserId(userId),
-        throwable -> new ArrayList<>());
+//    CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+//    List<OrderResponseDto> response = circuitBreaker.run(() -> orderServiceClient.getOrdersByUserId(userId),
+//        throwable -> new ArrayList<>());
 
-    return new UserResponseDto(user, response);
+    return new UserResponseDto(user);
   }
 
   public List<UserResponseDto> getAllUsers() {

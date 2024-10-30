@@ -16,6 +16,5 @@ public class ProductEndpoint {
   @RabbitListener(queues = "${message.queue.product}")
   public void handleProductQueue(SaveProductStockEvent event) {
     productService.decreaseProductStock(event);
-    log.info("재고 DB 저장 성공");
   }
 }

@@ -72,12 +72,14 @@ public class ProductService {
 
   @Transactional
   public void decreaseProductStock(SaveProductStockEvent event) {
-    try {
-      Product product = productRepository.findByProductId(event.getProductId())
-          .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+    Product product = productRepository.findByProductId(event.getProductId())
+        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
+    if (product.getStock() >= event.getQuantity()) {
       product.updateStock(product.getStock() - event.getQuantity());
-    } catch (Exception e) {
+      log.info("재고 DB 저장 성공");
+    } else {
+      log.info("재고 부족");
       this.rollbackProduct(new FailedStockUpdateEvent(
           event.getProductId(),
           event.getOrderId(),

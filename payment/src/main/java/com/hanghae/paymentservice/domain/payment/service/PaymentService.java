@@ -1,10 +1,10 @@
 package com.hanghae.paymentservice.domain.payment.service;
 
-import com.hanghae.paymentservice.domain.payment.event.FailedPaymentEvent;
 import com.hanghae.paymentservice.domain.payment.dto.OrderResponseDto;
+import com.hanghae.paymentservice.domain.payment.entity.Payment;
+import com.hanghae.paymentservice.domain.payment.event.FailedPaymentEvent;
 import com.hanghae.paymentservice.domain.payment.event.SavePaymentEvent;
 import com.hanghae.paymentservice.domain.payment.event.SaveProductStockEvent;
-import com.hanghae.paymentservice.domain.payment.entity.Payment;
 import com.hanghae.paymentservice.domain.payment.repository.PaymentRepository;
 import java.time.Duration;
 import java.util.HashMap;
@@ -50,7 +50,7 @@ public class PaymentService {
     RLock lock = redissonClient.getLock(lockKey);
 
     try {
-      boolean isLocked = lock.tryLock(7, 2, TimeUnit.SECONDS);
+      boolean isLocked = lock.tryLock(5, 3, TimeUnit.SECONDS);
       if (!isLocked) {
         log.error("락을 얻지 못했습니다.");
         throw new RuntimeException("락을 얻지 못했습니다.");
@@ -100,13 +100,15 @@ public class PaymentService {
 
   @Transactional
   public void successPayment(String productId, String orderId, Integer quantity) {
+
     String stockKey = STOCK_KEY_PREFIX + productId;
 
     String stock = redisTemplate.opsForValue().get(stockKey);
 
     if (stock == null) {
       // 재고가 없는 경우 처리
-      this.orderFailure(orderId);
+      this.rollbackPayment(new FailedPaymentEvent(
+          productId, orderId, quantity));
       return;
     }
 
@@ -114,52 +116,17 @@ public class PaymentService {
     int stockValue = Integer.parseInt(stock);
     if (stockValue < quantity) {
       // 재고 부족
-      this.orderFailure(orderId);
-        throw new IllegalStateException("재고가 부족합니다.");
+      this.rollbackPayment(new FailedPaymentEvent(
+          productId, orderId, quantity));
     } else {
       // 재고 감소 처리
       redisTemplate.opsForValue().decrement(stockKey, quantity);
 
-//      // Lua 스크립트를 사용하여 재고를 원자적으로 감소시킵니다.
-//    String luaScript =
-//        "local stock = redis.call('GET', KEYS[1]) " +
-//            "redis.call('SET', KEYS[1], stock) " +
-//            "if not stock then " +  // 만약 stock이 없으면
-//            "return -1 " +  // 재고 부족
-//            "end " +
-//            "if tonumber(stock) < tonumber(ARGV[1]) then " +
-//            "return -1 " + // 재고 부족
-//            "else " +
-//            "redis.call('DECRBY', KEYS[1], ARGV[1]) " +
-//            "return redis.call('GET', KEYS[1]) " +
-//            "end";
-//
-//    Long result = redisTemplate.execute((RedisCallback<Long>) (connection) ->
-//        connection.eval(luaScript.getBytes(StandardCharsets.UTF_8), ReturnType.INTEGER,
-//            1, stockKey.getBytes(StandardCharsets.UTF_8),
-//            String.valueOf(quantity).getBytes(StandardCharsets.UTF_8)));
-
       this.orderSuccess(orderId);
 
-//    if (result != null && result == -1) {
-//      order.failure();
-//      throw new IllegalStateException("재고가 부족합니다.");
-//    } else {
-//      order.success();
-//      rabbitMQProducer.sendToProduct("product-topic", new OrderResponseDto(productId, Integer.valueOf(quantity)));
-//    }
       rabbitTemplate.convertAndSend(queueProduct,
           new SaveProductStockEvent(productId, orderId, Integer.valueOf(quantity)));
     }
-  }
-
-  public void orderFailure(String orderId) {
-    webClient.put()
-        .uri(PORT + "/order-service/{orderId}/orders/failure", orderId)
-        .retrieve()
-        .bodyToMono(OrderResponseDto.class)
-        .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)))
-        .subscribe();
   }
 
   public void orderSuccess(String orderId) {
@@ -184,8 +151,8 @@ public class PaymentService {
       paymentRepository.save(payment);
     } catch (Exception e) {
       this.rollbackPayment(new FailedPaymentEvent(
-          event.getUserId(),
           event.getProductId(),
+          event.getOrderId(),
           Integer.parseInt(event.getQuantity())
       ));
     }

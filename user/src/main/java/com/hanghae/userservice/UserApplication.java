@@ -1,6 +1,5 @@
 package com.hanghae.userservice;
 
-import com.hanghae.userservice.domain.user.client.error.FeignErrorDecoder;
 import feign.Logger;
 import feign.Logger.Level;
 import org.springframework.boot.SpringApplication;
