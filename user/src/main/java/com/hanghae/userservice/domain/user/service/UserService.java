@@ -1,26 +1,18 @@
 package com.hanghae.userservice.domain.user.service;
 
 import com.hanghae.userservice.domain.user.client.OrderServiceClient;
-import com.hanghae.userservice.domain.user.dto.AddressRequestDto;
-import com.hanghae.userservice.domain.user.dto.AddressResponseDto;
-import com.hanghae.userservice.domain.user.dto.OrderResponseDto;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
 import com.hanghae.userservice.domain.user.dto.SignupResponseDto;
 import com.hanghae.userservice.domain.user.dto.UserResponseDto;
-import com.hanghae.userservice.domain.user.entity.Address;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
-import com.hanghae.userservice.domain.user.repository.AddressRepository;
 import com.hanghae.userservice.domain.user.repository.UserRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +23,6 @@ public class UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
-  private final AddressRepository addressRepository;
   private final OrderServiceClient orderServiceClient;
 
   @Value("${admin.token}")
@@ -57,20 +48,9 @@ public class UserService {
       role = UserRoleEnum.ADMIN;
     }
 
-    User user = new User(userId, request, password, role);
-
-    userRepository.save(user);
+    User user = userRepository.save(new User(userId, request, password, role););
 
     return new SignupResponseDto(user);
-  }
-
-  public AddressResponseDto createAddress(AddressRequestDto requestDto,String userId) {
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
-
-    Address address = addressRepository.save(new Address(requestDto, user.getUserId()));
-
-    return new AddressResponseDto(address);
   }
 
   public UserResponseDto getUserByUserId(String userId) {
@@ -118,12 +98,5 @@ public class UserService {
         .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
     return user.getRole();
-  }
-
-  public AddressResponseDto getAddress(String userId) {
-    Address address = addressRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("사용자의 주소가 존재하지 않습니다."));
-
-    return new AddressResponseDto(address);
   }
 }

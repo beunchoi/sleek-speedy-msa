@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     this.jwtUtil = jwtUtil;
     this.userService = userService;
     this.tokenService = tokenService;
-    setFilterProcessesUrl("/user-service/login");
+    setFilterProcessesUrl("/user-service/users/login");
   }
 
   @Override

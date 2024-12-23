@@ -3,8 +3,6 @@ package com.hanghae.userservice.domain.user.controller;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
 import com.hanghae.userservice.domain.user.dto.SignupResponseDto;
 import com.hanghae.userservice.domain.user.dto.UserResponseDto;
-import com.hanghae.userservice.domain.user.dto.address.AddressRequestDto;
-import com.hanghae.userservice.domain.user.dto.address.AddressResponseDto;
 import com.hanghae.userservice.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -39,13 +37,6 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @PostMapping("/users/address")
-  public ResponseEntity<AddressResponseDto> createAddress(@RequestBody AddressRequestDto requestDto, @RequestHeader("X-User-Id") String userId) {
-    AddressResponseDto response = userService.createAddress(requestDto, userId);
-
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-  }
-
   @GetMapping("/users/userlist")
   public ResponseEntity<List<UserResponseDto>> getAllUsers() {
     List<UserResponseDto> users = userService.getAllUsers();
@@ -56,13 +47,6 @@ public class UserController {
   @GetMapping("/users")
   public ResponseEntity<UserResponseDto> getUserByUserId(@RequestHeader("X-User-Id") String userId) {
     UserResponseDto response = userService.getUserByUserId(userId);
-
-    return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
-
-  @GetMapping("/users/address")
-  public ResponseEntity<AddressResponseDto> getAddress(@RequestHeader("X-User-Id") String userId) {
-    AddressResponseDto response = userService.getAddress(userId);
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
