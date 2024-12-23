@@ -1,4 +1,4 @@
-package com.hanghae.userservice.domain.wish.entity;
+package com.hanghae.userservice.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

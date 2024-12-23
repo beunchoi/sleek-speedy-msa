@@ -1,7 +1,7 @@
-package com.hanghae.userservice.domain.wish.controller;
+package com.hanghae.userservice.domain.user.controller;
 
-import com.hanghae.userservice.domain.wish.dto.WishResponseDto;
-import com.hanghae.userservice.domain.wish.service.WishService;
+import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
+import com.hanghae.userservice.domain.user.service.WishService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

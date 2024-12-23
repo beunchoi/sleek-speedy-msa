@@ -1,10 +1,10 @@
-package com.hanghae.userservice.domain.wish.service;
+package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.domain.wish.client.ProductServiceClient;
-import com.hanghae.userservice.domain.wish.dto.ProductResponseDto;
-import com.hanghae.userservice.domain.wish.dto.WishResponseDto;
-import com.hanghae.userservice.domain.wish.entity.Wish;
-import com.hanghae.userservice.domain.wish.repository.WishRepository;
+import com.hanghae.userservice.domain.user.client.wish.ProductServiceClient;
+import com.hanghae.userservice.domain.user.dto.wish.ProductResponseDto;
+import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
+import com.hanghae.userservice.domain.user.entity.Wish;
+import com.hanghae.userservice.domain.user.repository.WishRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.hanghae.userservice.domain.wish.client;
+package com.hanghae.userservice.domain.user.client.wish;
 
-import com.hanghae.userservice.domain.wish.dto.ProductResponseDto;
+import com.hanghae.userservice.domain.user.dto.wish.ProductResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,4 +1,4 @@
-package com.hanghae.userservice.domain.wish.dto;
+package com.hanghae.userservice.domain.user.dto.wish;
 
 import lombok.Data;
 

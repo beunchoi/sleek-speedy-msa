@@ -1,6 +1,6 @@
-package com.hanghae.userservice.domain.wish.repository;
+package com.hanghae.userservice.domain.user.repository;
 
-import com.hanghae.userservice.domain.wish.entity.Wish;
+import com.hanghae.userservice.domain.user.entity.Wish;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

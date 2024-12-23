@@ -1,6 +1,6 @@
-package com.hanghae.userservice.domain.wish.dto;
+package com.hanghae.userservice.domain.user.dto.wish;
 
-import com.hanghae.userservice.domain.wish.entity.Wish;
+import com.hanghae.userservice.domain.user.entity.Wish;
 import lombok.Data;
 
 @Data
