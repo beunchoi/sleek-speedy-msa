@@ -1,5 +1,6 @@
 package com.hanghae.userservice.domain.user.service;
 
+import com.hanghae.userservice.domain.user.dto.mail.MailResponseDto;
 import com.hanghae.userservice.global.config.RedisConfig;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -22,6 +23,27 @@ public class MailService {
 
   @Value("${mail.username}")
   private String senderEmail;
+
+  public MailResponseDto sendSimpleMessage(String sendEmail) throws MessagingException {
+    String number = createNumber();
+
+    MimeMessage message = createMail(sendEmail, number);
+    try {
+      javaMailSender.send(message);
+    } catch (MailException e) {
+      e.printStackTrace();
+      throw new IllegalArgumentException("메일 발송 중 오류가 발생했습니다.");
+    }
+
+    return new MailResponseDto(number);
+  }
+
+  /* 인증번호 확인 */
+  public Boolean checkAuthNum(String mail, String authNum) {
+    ValueOperations<String, String> valOperations = redisConfig.redisTemplate().opsForValue();
+    String code = valOperations.get(mail);
+    return Objects.equals(code, authNum);
+  }
 
   public String createNumber() {
     Random random = new Random();
@@ -57,28 +79,5 @@ public class MailService {
     valOperations.set(mail, number, 180, TimeUnit.SECONDS);
 
     return message;
-  }
-
-  public String sendSimpleMessage(String sendEmail) throws MessagingException {
-    String number = createNumber();
-
-    MimeMessage message = createMail(sendEmail, number);
-    try {
-      javaMailSender.send(message);
-    } catch (MailException e) {
-      e.printStackTrace();
-      throw new IllegalArgumentException("메일 발송 중 오류가 발생했습니다.");
-    }
-
-    return number;
-  }
-
-  /* 인증번호 확인 */
-  public Boolean checkAuthNum(String mail, String authNum) {
-    ValueOperations<String, String> valOperations = redisConfig.redisTemplate().opsForValue();
-    String code = valOperations.get(mail);
-    if (Objects.equals(code, authNum)) {
-      return true;
-    } else return false;
   }
 }
