@@ -20,22 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class WishController {
 
   private final WishService wishService;
-  @PostMapping("/wishs/{productId}")
-  public ResponseEntity<String> createUpdateWish(@RequestHeader("X-User-Id") String userId, @PathVariable String productId) {
-    wishService.createUpdateWish(userId, productId);
-    return ResponseEntity.status(HttpStatus.OK).body("위시리스트에 추가하였습니다.");
+  @PostMapping("/wish/{productId}")
+  public ResponseEntity<WishResponseDto> createUpdateWish(@RequestHeader("X-User-Id") String userId, @PathVariable String productId) {
+    WishResponseDto response = wishService.createUpdateWish(userId, productId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
-  @GetMapping("/wishs")
+  @GetMapping("/wish")
   public ResponseEntity<List<WishResponseDto>> getMyWishList(@RequestHeader("X-User-Id") String userId) {
     List<WishResponseDto> wishList = wishService.getMyWishList(userId);
     return ResponseEntity.status(HttpStatus.OK).body(wishList);
   }
 
-  @PutMapping("/wishs/{productId}")
-  public ResponseEntity<String> deleteWish(@RequestHeader("X-User-Id") String userId, @PathVariable String productId) {
-    wishService.deleteWish(userId, productId);
-    return ResponseEntity.status(HttpStatus.OK).body("삭제되었습니다.");
+  @PutMapping("/wish/{productId}")
+  public ResponseEntity<WishResponseDto> deleteWish(@RequestHeader("X-User-Id") String userId, @PathVariable String productId) {
+    WishResponseDto response = wishService.deleteWish(userId, productId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }
 

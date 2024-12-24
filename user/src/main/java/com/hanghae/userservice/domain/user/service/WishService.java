@@ -18,7 +18,7 @@ public class WishService {
   private final ProductServiceClient productServiceClient;
 
   @Transactional
-  public void createUpdateWish(String userId, String productId) {
+  public WishResponseDto createUpdateWish(String userId, String productId) {
     ProductResponseDto response = productServiceClient.getProductByProductId(productId);
     if (response == null) {
       throw new IllegalArgumentException("해당 상품이 존재하지 않습니다.");
@@ -27,9 +27,11 @@ public class WishService {
     Wish wish = wishRepository.findByUserIdAndProductId(userId, productId).orElse(null);
     if (wish == null) {
       boolean active = true;
-      wishRepository.save(new Wish(userId, productId, active));
+      Wish savedWish = wishRepository.save(new Wish(userId, productId, active));
+      return new WishResponseDto(savedWish);
     } else {
       wish.updateToTrue();
+      return new WishResponseDto(wish);
     }
   }
 
@@ -40,10 +42,12 @@ public class WishService {
   }
 
   @Transactional
-  public void deleteWish(String userId, String productId) {
+  public WishResponseDto deleteWish(String userId, String productId) {
     Wish wish = wishRepository.findByUserIdAndProductId(userId, productId)
         .orElseThrow(() -> new IllegalArgumentException("위시 리스트에 등록되지 않았습니다."));
 
     wish.updateToFalse();
+
+    return new WishResponseDto(wish);
   }
 }
