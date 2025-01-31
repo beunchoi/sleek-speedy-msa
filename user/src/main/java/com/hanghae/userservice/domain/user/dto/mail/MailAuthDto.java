@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class MailAuthDto {
-
-  private String mail;
+  private String email;
   private String authNum;
+
 }

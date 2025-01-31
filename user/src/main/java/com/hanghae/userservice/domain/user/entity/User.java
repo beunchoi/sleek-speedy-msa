@@ -19,25 +19,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "user")
 public class User {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @Column(nullable = false, unique = true)
   private String userId;
-
   @Column(nullable = false, unique = true)
   private String email;
-
   @Column(nullable = false)
   private String password;
-
   @Column(nullable = false, unique = true)
   private String name;
-
   @Column(nullable = false, unique = true)
   private String phoneNum;
-
   @Column(nullable = false)
   private String profile = "자기소개 해주세요";
 
@@ -53,4 +48,9 @@ public class User {
     this.phoneNum = request.getPhoneNum();
     this.role = role;
   }
+
+  public void updateProfile(String profile) {
+    this.profile = profile;
+  }
+
 }

@@ -1,4 +1,4 @@
-package com.hanghae.userservice.global.jwt;
+package com.hanghae.userservice.domain.user.jwt;
 
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import io.jsonwebtoken.Claims;
@@ -12,22 +12,20 @@ import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j(topic = "JwtUtil")
 @Component
-@RequiredArgsConstructor
 public class JwtUtil {
-  // 사용자 권한 값의 KEY
-  public static final String AUTHORIZATION_KEY = "auth";
-  // 토큰 만료시간
-  private final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
-  private final long REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000L;
 
-  @Value("${token.secret}") // Base64 Encode 한 SecretKey
+  public static final String BEAR_PREFIX = "Bearer ";
+  public static final String AUTHORIZATION_KEY = "auth";
+  private final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
+  public static final long REFRESH_TOKEN_TIME = 24 * 60 * 60 * 1000L;
+
+  @Value("${jwt.secret.key}")
   private String secretKey;
   private Key key;
   private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -38,30 +36,30 @@ public class JwtUtil {
     key = Keys.hmacShaKeyFor(bytes);
   }
 
-  // 토큰 생성
   public String createAccessToken(String userId, UserRoleEnum role) {
     Date date = new Date();
 
-    return Jwts.builder()
-            .setSubject(userId)
-            .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-            .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
-            .setIssuedAt(date) // 발급일
-            .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-            .compact();
+    return BEAR_PREFIX +
+        Jwts.builder()
+          .setSubject(userId)
+          .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+          .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
+          .setIssuedAt(date) // 발급일
+          .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+          .compact();
   }
 
-  public String createRefreshToken(String userId) {
+  public String createRefreshToken(String userId, UserRoleEnum role) {
     Date date = new Date();
 
     return Jwts.builder()
             .setSubject(userId)
+            .claim(AUTHORIZATION_KEY, role)
             .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
             .signWith(key, signatureAlgorithm)
             .compact();
   }
 
-  // 토큰 검증
   public boolean validateToken(String token) {
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -78,8 +76,8 @@ public class JwtUtil {
     return false;
   }
 
-  // 토큰에서 사용자 정보 가져오기
   public Claims getUserInfoFromToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
   }
+
 }

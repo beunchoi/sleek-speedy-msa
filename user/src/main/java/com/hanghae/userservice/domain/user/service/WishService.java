@@ -1,12 +1,10 @@
 package com.hanghae.userservice.domain.user.service;
 
+import com.hanghae.userservice.common.dto.ProductResponseDto;
 import com.hanghae.userservice.domain.user.client.wish.ProductServiceClient;
-import com.hanghae.userservice.domain.user.dto.wish.ProductResponseDto;
-import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
 import com.hanghae.userservice.domain.user.entity.Wish;
 import com.hanghae.userservice.domain.user.repository.WishRepository;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,36 +16,29 @@ public class WishService {
   private final ProductServiceClient productServiceClient;
 
   @Transactional
-  public WishResponseDto createUpdateWish(String userId, String productId) {
+  public Wish createUpdateWish(String userId, String productId) {
     ProductResponseDto response = productServiceClient.getProductByProductId(productId);
     if (response == null) {
       throw new IllegalArgumentException("해당 상품이 존재하지 않습니다.");
     }
 
-    Wish wish = wishRepository.findByUserIdAndProductId(userId, productId).orElse(null);
+    Wish wish = wishRepository.findByUserIdAndProductId(userId, response.getProductId()).orElse(null);
+
     if (wish == null) {
-      boolean active = true;
-      Wish savedWish = wishRepository.save(new Wish(userId, productId, active));
-      return new WishResponseDto(savedWish);
+      return wishRepository.save(new Wish(userId, response.getProductId(), true));
+    } else if (!wish.isActive()) {
+      wish.activate();
+      return wish;
     } else {
-      wish.updateToTrue();
-      return new WishResponseDto(wish);
+      wish.deactivate();
+      return wish;
     }
   }
 
-  public List<WishResponseDto> getMyWishList(String userId) {
+  public List<Wish> getMyWishList(String userId) {
     List<Wish> wishList = wishRepository.findAllByUserIdAndActiveIsTrue(userId);
 
-    return wishList.stream().map(WishResponseDto::new).collect(Collectors.toList());
+    return wishList;
   }
 
-  @Transactional
-  public WishResponseDto deleteWish(String userId, String productId) {
-    Wish wish = wishRepository.findByUserIdAndProductId(userId, productId)
-        .orElseThrow(() -> new IllegalArgumentException("위시 리스트에 등록되지 않았습니다."));
-
-    wish.updateToFalse();
-
-    return new WishResponseDto(wish);
-  }
 }

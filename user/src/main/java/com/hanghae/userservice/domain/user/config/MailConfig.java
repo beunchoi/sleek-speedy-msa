@@ -1,4 +1,4 @@
-package com.hanghae.userservice.global.config;
+package com.hanghae.userservice.domain.user.config;
 
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,4 +31,5 @@ public class MailConfig {
 
     return mailSender;
   }
+
 }

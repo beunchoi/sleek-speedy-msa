@@ -32,11 +32,12 @@ public class Wish {
     this.active = active;
   }
 
-  public void updateToTrue() {
+  public void activate() {
     this.active = true;
   }
 
-  public void updateToFalse() {
+  public void deactivate() {
     this.active = false;
   }
+
 }

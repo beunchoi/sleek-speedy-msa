@@ -1,20 +1,21 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.domain.user.client.OrderServiceClient;
+import com.hanghae.userservice.common.exception.BizRuntimeException;
+import com.hanghae.userservice.domain.user.dto.LoginRequestDto;
+import com.hanghae.userservice.domain.user.dto.LoginResponseDto;
+import com.hanghae.userservice.domain.user.dto.ProfileRequestDto;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
-import com.hanghae.userservice.domain.user.dto.SignupResponseDto;
-import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
+import com.hanghae.userservice.domain.user.jwt.JwtUtil;
 import com.hanghae.userservice.domain.user.repository.UserRepository;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,24 +24,19 @@ public class UserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
-  private final OrderServiceClient orderServiceClient;
+  private final JwtUtil jwtUtil;
+  private final TokenService tokenService;
 
   @Value("${admin.token}")
   private String ADMIN_TOKEN;
 
-  public SignupResponseDto signup(SignupRequestDto request) {
+  public User signup(SignupRequestDto request) {
     String userId = UUID.randomUUID().toString();
-
-    String name = request.getName();
     String email = request.getEmail();
     String password = passwordEncoder.encode(request.getPassword());
 
     if (userRepository.findByEmail(email).isPresent()) {
-      throw new IllegalArgumentException("중복된 email 입니다.");
-    }
-
-    if (userRepository.findByName(name).isPresent()) {
-      throw new IllegalArgumentException("중복된 name 입니다.");
+      throw new BizRuntimeException("중복된 email 입니다.");
     }
 
     UserRoleEnum role = UserRoleEnum.USER;
@@ -48,55 +44,43 @@ public class UserService {
       role = UserRoleEnum.ADMIN;
     }
 
-    User user = userRepository.save(new User(userId, request, password, role););
-
-    return new SignupResponseDto(user);
+    return userRepository.save(new User(userId, request, password, role));
   }
 
-  public UserResponseDto getUserByUserId(String userId) {
+  public LoginResponseDto login(LoginRequestDto requestDto) {
+    User user = userRepository.findByEmail(requestDto.getEmail())
+        .orElseThrow(() -> new BizRuntimeException("존재하지 않는 유저입니다."));
+
+    if (passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+      return successfulAuthentication(user);
+    } else {
+      throw new BizRuntimeException("잘못된 비밀번호입니다.");
+    }
+  }
+
+  @Transactional
+  public String updateProfile(String userId, ProfileRequestDto reqDto) {
     User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        .orElseThrow(() -> new BizRuntimeException("존재하지 않는 유저입니다."));
 
-//    String orderUrl = "http://ORDER-SERVICE/order-service/%s/orders";
-//    ResponseEntity<List<OrderResponseDto>> responseEntity = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-//        new ParameterizedTypeReference<List<OrderResponseDto>>() {
-//    });
-//
-//    List<OrderResponseDto> response = responseEntity.getBody();
-
-//    List<OrderResponseDto> response = null;
-//    try {
-//      response = orderServiceClient.getOrdersByUserId(userId);
-//    } catch (FeignException ex) {
-//      log.error(ex.getMessage());
-//    }
-
-//    List<OrderResponseDto> response = orderServiceClient.getOrdersByUserId(userId);
-
-//    CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
-//    List<OrderResponseDto> response = circuitBreaker.run(() -> orderServiceClient.getOrdersByUserId(userId),
-//        throwable -> new ArrayList<>());
-
-    return new UserResponseDto(user);
+    user.updateProfile(reqDto.getProfile());
+    return user.getProfile();
   }
 
-  public List<UserResponseDto> getAllUsers() {
-    List<User> users = userRepository.findAll();
-
-    return users.stream().map(UserResponseDto::new).collect(Collectors.toList());
-  }
-
-  public UserResponseDto getUserDetailsByEmail(String email) {
-    User user = userRepository.findByEmail(email).orElseThrow(
-        () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-
-    return new UserResponseDto(user);
-  }
-
-  public UserRoleEnum getUserRole(String userId) {
+  public User getUserInfoByUserId(String userId) {
     User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        .orElseThrow(() -> new BizRuntimeException("존재하지 않는 유저입니다."));
 
-    return user.getRole();
+    return user;
   }
+
+  private LoginResponseDto successfulAuthentication(User user) {
+    String accessToken = jwtUtil.createAccessToken(user.getUserId(), user.getRole());
+    String refreshToken = jwtUtil.createRefreshToken(user.getUserId(), user.getRole());
+
+    tokenService.saveRefreshToken(user.getUserId(), refreshToken);
+
+    return new LoginResponseDto(accessToken, refreshToken);
+  }
+
 }

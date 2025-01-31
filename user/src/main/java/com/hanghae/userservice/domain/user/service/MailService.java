@@ -1,7 +1,5 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.domain.user.dto.mail.MailResponseDto;
-import com.hanghae.userservice.global.config.RedisConfig;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Objects;
@@ -9,7 +7,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,29 +17,26 @@ import org.springframework.stereotype.Service;
 public class MailService {
 
   private final JavaMailSender javaMailSender;
-  private final RedisConfig redisConfig;
+  private final RedisTemplate<String, String> redisTemplate;
 
   @Value("${mail.username}")
   private String senderEmail;
 
-  public MailResponseDto sendSimpleMessage(String sendEmail) throws MessagingException {
+  public String sendSimpleMessage(String sendEmail) throws MessagingException {
     String number = createNumber();
 
     MimeMessage message = createMail(sendEmail, number);
     try {
       javaMailSender.send(message);
     } catch (MailException e) {
-      e.printStackTrace();
       throw new IllegalArgumentException("메일 발송 중 오류가 발생했습니다.");
     }
 
-    return new MailResponseDto(number);
+    return number;
   }
 
-  /* 인증번호 확인 */
-  public Boolean checkAuthNum(String mail, String authNum) {
-    ValueOperations<String, String> valOperations = redisConfig.redisTemplate().opsForValue();
-    String code = valOperations.get(mail);
+  public Boolean checkAuthNum(String email, String authNum) {
+    String code = redisTemplate.opsForValue().get(email);
     return Objects.equals(code, authNum);
   }
 
@@ -75,9 +70,9 @@ public class MailService {
     message.setText(body, "UTF-8", "html");
 
     // redis에 3분 동안 이메일과 인증 코드 저장
-    ValueOperations<String, String> valOperations = redisConfig.redisTemplate().opsForValue();
-    valOperations.set(mail, number, 180, TimeUnit.SECONDS);
+    redisTemplate.opsForValue().set(mail, number, 180, TimeUnit.SECONDS);
 
     return message;
   }
+
 }
