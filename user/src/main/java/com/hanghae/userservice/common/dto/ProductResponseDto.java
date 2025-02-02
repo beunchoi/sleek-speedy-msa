@@ -1,10 +1,11 @@
-package com.hanghae.productservice.domain.product.dto;
+package com.hanghae.userservice.common.dto;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-public class ProductRequestDto {
+@Data
+public class ProductResponseDto {
 
+  private String productId;
   private String title;
   private Integer price;
   private String category;

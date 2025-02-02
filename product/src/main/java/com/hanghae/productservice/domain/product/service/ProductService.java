@@ -1,13 +1,13 @@
 package com.hanghae.productservice.domain.product.service;
 
-import com.hanghae.productservice.domain.product.event.FailedStockUpdateEvent;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
-import com.hanghae.productservice.domain.product.event.SaveProductStockEvent;
 import com.hanghae.productservice.domain.product.entity.Product;
+import com.hanghae.productservice.domain.product.event.FailedStockUpdateEvent;
+import com.hanghae.productservice.domain.product.event.SaveProductStockEvent;
 import com.hanghae.productservice.domain.product.repository.ProductRepository;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,28 +24,37 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final RedisTemplate<String, String> redisTemplate;
   private final RabbitTemplate rabbitTemplate;
+
   @Value("${message2.err.exchange}")
   private String exchangeErr;
   @Value("${message2.queue.err.payment}")
   private String queueErrPayment;
-  private static final String STOCK_KEY_PREFIX = "product:stock:";
+  private static final String STOCK_KEY = "product:stock:";
 
-  public ProductResponseDto createProduct(ProductRequestDto requestDto) {
-    Product product = productRepository.save(new Product(requestDto));
+  public Product createProduct(ProductRequestDto requestDto) {
+    String productId = UUID.randomUUID().toString();
+    Product product = productRepository.save(new Product(productId, requestDto));
 
-    return new ProductResponseDto(product);
+    return product;
   }
 
-  public List<ProductResponseDto> getProducts() {
-    List<Product> products = productRepository.findAll();
-    return products.stream().map(ProductResponseDto::new).collect(Collectors.toList());
+  public List<Product> getProducts() {
+    List<Product> productList = productRepository.findAll();
+
+    return productList;
   }
 
-  public ProductResponseDto getProductByProductId(String productId) {
+  public void initializeStock(String productId) {
     Product product = productRepository.findByProductId(productId)
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-    return new ProductResponseDto(product);
+    redisTemplate.opsForValue().set(STOCK_KEY + productId,
+        String.valueOf(product.getStock()));
+  }
+
+  public String getProductStock(String productId) {
+
+    return redisTemplate.opsForValue().get(STOCK_KEY + productId);
   }
 
   @Transactional
@@ -57,17 +66,11 @@ public class ProductService {
     return new ProductResponseDto(product);
   }
 
-  public void initializeStock(String productId) {
+  public ProductResponseDto getProductByProductId(String productId) {
     Product product = productRepository.findByProductId(productId)
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-    redisTemplate.opsForValue().set(STOCK_KEY_PREFIX + productId,
-        String.valueOf(product.getStock()));
-  }
-
-  public String getProductStock(String productId) {
-
-    return redisTemplate.opsForValue().get(STOCK_KEY_PREFIX + productId);
+    return new ProductResponseDto(product);
   }
 
   @Transactional
@@ -89,10 +92,11 @@ public class ProductService {
   }
 
   public void rollbackProduct(FailedStockUpdateEvent event) {
-    String stockKey = STOCK_KEY_PREFIX + event.getProductId();
+    String stockKey = STOCK_KEY+ event.getProductId();
 
     redisTemplate.opsForValue().increment(stockKey, event.getQuantity());
 
     rabbitTemplate.convertAndSend(exchangeErr, queueErrPayment, event);
   }
+
 }

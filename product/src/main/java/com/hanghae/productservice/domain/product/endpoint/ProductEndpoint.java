@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProductEndpoint {
+
   private final ProductService productService;
 
   @RabbitListener(queues = "${message.queue.product}")

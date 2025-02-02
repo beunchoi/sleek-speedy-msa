@@ -19,34 +19,26 @@ public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @Column(nullable = false, unique = true)
   private String productId;
-
   @Column(nullable = false)
   private String title;
-
-  @Column(nullable = false)
-  private String image;
-
   @Column(nullable = false)
   private Integer price;
-
   @Column(nullable = false)
   private String category;
-
   @Column(nullable = false)
   private String description;
-
   @Column(nullable = false)
   private Integer stock;
 
-  public Product(ProductRequestDto requestDto) {
+  public Product(String productId, ProductRequestDto requestDto) {
+    this.productId = productId;
     this.title = requestDto.getTitle();
-    this.image = requestDto.getImage();
     this.price = requestDto.getPrice();
     this.category = requestDto.getCategory();
     this.description = requestDto.getDescription();
+    this.stock = requestDto.getStock();
   }
 
   public void incrementStock() {
@@ -56,4 +48,5 @@ public class Product {
   public void updateStock(int stock) {
     this.stock = stock;
   }
+
 }
