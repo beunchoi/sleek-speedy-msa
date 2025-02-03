@@ -6,7 +6,7 @@ import com.hanghae.userservice.domain.user.dto.LoginRequestDto;
 import com.hanghae.userservice.domain.user.dto.LoginResponseDto;
 import com.hanghae.userservice.domain.user.dto.ProfileRequestDto;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
-import com.hanghae.userservice.domain.user.entity.User;
+import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.jwt.JwtUtil;
 import com.hanghae.userservice.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,10 +31,10 @@ public class UserController {
 
   @PostMapping("/signup")
   public ResponseEntity<ResponseMessage> signup(@RequestBody SignupRequestDto requestDto) {
-    User createdUser = userService.signup(requestDto);
+    UserResponseDto response = userService.signup(requestDto);
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(createdUser)
+        .data(response)
         .statusCode(201)
         .resultMessage("회원 가입 성공")
         .build();
@@ -82,10 +82,10 @@ public class UserController {
   @GetMapping
   public ResponseEntity<ResponseMessage> getUserInfoByUserId(HttpServletRequest request) {
     String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    User user = userService.getUserInfoByUserId(userId);
+    UserResponseDto response = userService.getUserInfoByUserId(userId);
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(user)
+        .data(response)
         .statusCode(200)
         .resultMessage("사용자 정보 조회")
         .build();

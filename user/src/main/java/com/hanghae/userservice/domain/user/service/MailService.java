@@ -18,6 +18,7 @@ public class MailService {
 
   private final JavaMailSender javaMailSender;
   private final RedisTemplate<String, String> redisTemplate;
+  public static final String EMAIL_AUTH_KEY = "emailAuth:";
 
   @Value("${mail.username}")
   private String senderEmail;
@@ -57,11 +58,11 @@ public class MailService {
     return key.toString();
   }
 
-  public MimeMessage createMail(String mail, String number) throws MessagingException {
+  public MimeMessage createMail(String email, String number) throws MessagingException {
     MimeMessage message = javaMailSender.createMimeMessage();
 
     message.setFrom(senderEmail);
-    message.setRecipients(MimeMessage.RecipientType.TO, mail);
+    message.setRecipients(MimeMessage.RecipientType.TO, email);
     message.setSubject("이메일 인증");
     String body = "";
     body += "<h3>요청하신 인증 번호입니다.</h3>";
@@ -70,7 +71,8 @@ public class MailService {
     message.setText(body, "UTF-8", "html");
 
     // redis에 3분 동안 이메일과 인증 코드 저장
-    redisTemplate.opsForValue().set(mail, number, 180, TimeUnit.SECONDS);
+    redisTemplate.opsForValue()
+        .set(EMAIL_AUTH_KEY + email, number, 180, TimeUnit.SECONDS);
 
     return message;
   }

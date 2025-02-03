@@ -2,6 +2,7 @@ package com.hanghae.userservice.domain.user.controller;
 
 import com.hanghae.userservice.common.dto.ResponseMessage;
 import com.hanghae.userservice.common.util.ParseRequestUtil;
+import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
 import com.hanghae.userservice.domain.user.entity.Wish;
 import com.hanghae.userservice.domain.user.service.WishService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,17 +26,17 @@ public class WishController {
   @PostMapping("/{productId}")
   public ResponseEntity<ResponseMessage> createUpdateWish(HttpServletRequest request, @PathVariable("productId") String productId) {
     String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    Wish wish = wishService.createUpdateWish(userId, productId);
+    WishResponseDto response = wishService.createUpdateWish(userId, productId);
 
     String resultMessage;
-    if (wish.isActive()) {
+    if (response.isActive()) {
       resultMessage = "관심 상품으로 등록되었습니다.";
     } else {
       resultMessage = "관심 상품에서 제외되었습니다.";
     }
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(wish)
+        .data(response)
         .statusCode(200)
         .resultMessage(resultMessage)
         .build();
@@ -46,10 +47,10 @@ public class WishController {
   @GetMapping
   public ResponseEntity<ResponseMessage> getMyWishList(HttpServletRequest request) {
     String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    List<Wish> wishList = wishService.getMyWishList(userId);
+    List<WishResponseDto> responses = wishService.getMyWishList(userId);
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(wishList)
+        .data(responses)
         .statusCode(200)
         .resultMessage("관심 상품 목록 조회")
         .build();

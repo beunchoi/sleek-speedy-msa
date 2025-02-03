@@ -3,6 +3,7 @@ package com.hanghae.userservice.domain.user.controller;
 import com.hanghae.userservice.common.dto.ResponseMessage;
 import com.hanghae.userservice.common.util.ParseRequestUtil;
 import com.hanghae.userservice.domain.user.dto.address.AddressRequestDto;
+import com.hanghae.userservice.domain.user.dto.address.AddressResponseDto;
 import com.hanghae.userservice.domain.user.entity.Address;
 import com.hanghae.userservice.domain.user.service.AddressService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +26,10 @@ public class AddressController {
   @PostMapping
   public ResponseEntity<ResponseMessage> createAddress(HttpServletRequest request, @RequestBody AddressRequestDto requestDto) {
     String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    Address savedAddress = addressService.createAddress(requestDto, userId);
+    AddressResponseDto response = addressService.createAddress(requestDto, userId);
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(savedAddress)
+        .data(response)
         .statusCode(201)
         .resultMessage("주소가 저장되었습니다.")
         .build();
@@ -39,10 +40,10 @@ public class AddressController {
   @GetMapping
   public ResponseEntity<ResponseMessage> getAddress(HttpServletRequest request) {
     String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    Address address = addressService.getAddress(userId);
+    AddressResponseDto response = addressService.getAddress(userId);
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(address)
+        .data(response)
         .statusCode(200)
         .resultMessage("주소 조회")
         .build();

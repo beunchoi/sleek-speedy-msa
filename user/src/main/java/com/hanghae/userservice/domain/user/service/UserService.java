@@ -5,6 +5,7 @@ import com.hanghae.userservice.domain.user.dto.LoginRequestDto;
 import com.hanghae.userservice.domain.user.dto.LoginResponseDto;
 import com.hanghae.userservice.domain.user.dto.ProfileRequestDto;
 import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
+import com.hanghae.userservice.domain.user.dto.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.jwt.JwtUtil;
@@ -30,7 +31,7 @@ public class UserService {
   @Value("${admin.token}")
   private String ADMIN_TOKEN;
 
-  public User signup(SignupRequestDto request) {
+  public UserResponseDto signup(SignupRequestDto request) {
     String userId = UUID.randomUUID().toString();
     String email = request.getEmail();
     String password = passwordEncoder.encode(request.getPassword());
@@ -44,7 +45,9 @@ public class UserService {
       role = UserRoleEnum.ADMIN;
     }
 
-    return userRepository.save(new User(userId, request, password, role));
+    User savedUser = userRepository.save(new User(userId, request, password, role));
+
+    return new UserResponseDto(savedUser);
   }
 
   public LoginResponseDto login(LoginRequestDto requestDto) {
@@ -67,11 +70,11 @@ public class UserService {
     return user.getProfile();
   }
 
-  public User getUserInfoByUserId(String userId) {
+  public UserResponseDto getUserInfoByUserId(String userId) {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new BizRuntimeException("존재하지 않는 유저입니다."));
 
-    return user;
+    return new UserResponseDto(user);
   }
 
   private LoginResponseDto successfulAuthentication(User user) {

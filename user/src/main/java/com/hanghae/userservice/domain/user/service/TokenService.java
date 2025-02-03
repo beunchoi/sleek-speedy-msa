@@ -14,6 +14,7 @@ public class TokenService {
 
   private final RedisTemplate<String, String> redisTemplate;
   private final JwtUtil jwtUtil;
+  public static final String REFRESH_TOKEN_KEY = "refreshToken:";
 
   public String reissueToken(String refreshToken) {
 
@@ -34,7 +35,7 @@ public class TokenService {
   }
 
   public void saveRefreshToken(String userId, String refreshToken) {
-    redisTemplate.opsForValue().set("refreshToken: " + userId,
+    redisTemplate.opsForValue().set(REFRESH_TOKEN_KEY + userId,
         refreshToken, JwtUtil.REFRESH_TOKEN_TIME, TimeUnit.MILLISECONDS);
   }
 
@@ -44,7 +45,7 @@ public class TokenService {
   }
 
   public String getRefreshToken(String userId) {
-    return redisTemplate.opsForValue().get("refreshToken: " + userId);
+    return redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY + userId);
   }
 
 }
