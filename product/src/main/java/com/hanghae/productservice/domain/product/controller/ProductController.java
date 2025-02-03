@@ -4,7 +4,6 @@ import com.hanghae.productservice.common.dto.ResponseMessage;
 import com.hanghae.productservice.common.util.ParseRequestUtil;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
-import com.hanghae.productservice.domain.product.entity.Product;
 import com.hanghae.productservice.domain.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,10 +29,10 @@ public class ProductController {
       @RequestBody ProductRequestDto requestDto) {
     // 관리자 권한 검증
     ParseRequestUtil.validateAdminRoleFromRequest(request);
-    Product savedProduct = productService.createProduct(requestDto);
+    ProductResponseDto response = productService.createProduct(requestDto);
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(savedProduct)
+        .data(response)
         .statusCode(201)
         .resultMessage("상품을 저장했습니다.")
         .build();
@@ -44,10 +42,10 @@ public class ProductController {
 
   @GetMapping
   public ResponseEntity<ResponseMessage> getProducts() {
-    List<Product> productList = productService.getProducts();
+    List<ProductResponseDto> responses = productService.getProducts();
 
     ResponseMessage message = ResponseMessage.builder()
-        .data(productList)
+        .data(responses)
         .statusCode(200)
         .resultMessage("상품 목록 조회")
         .build();
@@ -69,19 +67,6 @@ public class ProductController {
   public ResponseEntity<String> getProductStock(@PathVariable String productId) {
     String productStock = productService.getProductStock(productId);
     return ResponseEntity.status(HttpStatus.OK).body(productStock);
-  }
-
-  @PutMapping("/{productId}/increment")
-  public ResponseEntity<ProductResponseDto> incrementProductStock(@PathVariable String productId) {
-    ProductResponseDto response = productService.incrementProductStock(productId);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
-
-  @GetMapping("/{productId}")
-  public ResponseEntity<ProductResponseDto> getProductByProductId(@PathVariable("productId") String productId) {
-    ProductResponseDto response = productService.getProductByProductId(productId);
-
-    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
 }

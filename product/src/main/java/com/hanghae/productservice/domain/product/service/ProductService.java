@@ -6,6 +6,7 @@ import com.hanghae.productservice.domain.product.entity.Product;
 import com.hanghae.productservice.domain.product.event.FailedStockUpdateEvent;
 import com.hanghae.productservice.domain.product.event.SaveProductStockEvent;
 import com.hanghae.productservice.domain.product.repository.ProductRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,17 +32,22 @@ public class ProductService {
   private String queueErrPayment;
   private static final String STOCK_KEY = "product:stock:";
 
-  public Product createProduct(ProductRequestDto requestDto) {
+  public ProductResponseDto createProduct(ProductRequestDto requestDto) {
     String productId = UUID.randomUUID().toString();
     Product product = productRepository.save(new Product(productId, requestDto));
 
-    return product;
+    return new ProductResponseDto(product);
   }
 
-  public List<Product> getProducts() {
+  public List<ProductResponseDto> getProducts() {
     List<Product> productList = productRepository.findAll();
+    List<ProductResponseDto> responseDtos = new ArrayList<>();
 
-    return productList;
+    for (Product product : productList) {
+      responseDtos.add(new ProductResponseDto(product));
+    }
+
+    return responseDtos;
   }
 
   public void initializeStock(String productId) {
@@ -58,11 +64,11 @@ public class ProductService {
   }
 
   @Transactional
-  public ProductResponseDto incrementProductStock(String productId) {
+  public ProductResponseDto increaseProductStock(int quantity, String productId) {
     Product product = productRepository.findByProductId(productId)
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-    product.incrementStock();
+    product.increaseStock(quantity);
     return new ProductResponseDto(product);
   }
 

@@ -41,8 +41,8 @@ public class Product {
     this.stock = requestDto.getStock();
   }
 
-  public void incrementStock() {
-    this.stock++;
+  public void increaseStock(int quantity) {
+    this.stock += quantity;
   }
 
   public void updateStock(int stock) {

@@ -1,4 +1,4 @@
-package com.hanghae.orderservice.domain.order.dto;
+package com.hanghae.orderservice.common.dto;
 
 import lombok.Data;
 
@@ -7,7 +7,6 @@ public class ProductResponseDto {
 
   private String productId;
   private String title;
-  private String image;
   private Integer price;
   private String category;
   private String description;

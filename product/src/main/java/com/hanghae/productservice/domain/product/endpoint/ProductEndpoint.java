@@ -18,4 +18,5 @@ public class ProductEndpoint {
   public void handleProductQueue(SaveProductStockEvent event) {
     productService.decreaseProductStock(event);
   }
+
 }

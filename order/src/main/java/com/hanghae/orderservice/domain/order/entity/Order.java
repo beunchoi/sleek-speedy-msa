@@ -22,12 +22,10 @@ public class Order extends Timestamp {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @Column(nullable = false)
   private String userId;
   @Column(nullable = false, unique = true)
   private String orderId;
-
   @Column(nullable = false)
   private String productId;
   @Column(nullable = false)
@@ -76,12 +74,13 @@ public class Order extends Timestamp {
     this.deliveredDate = LocalDate.now();
   }
 
-  public void requestReturn() {
+  public void requestProductReturn() {
     this.status = OrderStatus.RETURN_REQUESTED;
     this.returnRequestedDate = LocalDate.now();
   }
 
-  public void completeReturn() {
+  public void completeProductReturn() {
     this.status = OrderStatus.RETURNED;
   }
+
 }

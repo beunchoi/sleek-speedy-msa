@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class ReturnRequestResponse {
+public class ReturnResponseDto {
   private String userId;
   private String orderId;
   private String productId;
@@ -16,7 +16,7 @@ public class ReturnRequestResponse {
   private OrderStatus status;
   private LocalDate returnRequestedDate;
 
-  public ReturnRequestResponse(Order order) {
+  public ReturnResponseDto(Order order) {
     this.userId = order.getUserId();
     this.orderId = order.getOrderId();
     this.productId = order.getProductId();
