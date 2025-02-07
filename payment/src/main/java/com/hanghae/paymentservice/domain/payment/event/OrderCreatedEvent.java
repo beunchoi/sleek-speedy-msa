@@ -5,10 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SavePaymentEvent {
-  private String tid;
+public class OrderCreatedEvent {
   private String orderId;
-  private String userId;
+  private String paymentMethodId;
+  private Integer totalPrice;
   private String productId;
-  private String quantity;
+  private Integer quantity;
+
 }

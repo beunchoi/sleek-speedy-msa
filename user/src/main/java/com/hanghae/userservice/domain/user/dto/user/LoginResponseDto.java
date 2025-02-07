@@ -1,4 +1,4 @@
-package com.hanghae.userservice.domain.user.dto;
+package com.hanghae.userservice.domain.user.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

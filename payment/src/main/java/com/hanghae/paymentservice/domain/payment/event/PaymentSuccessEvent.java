@@ -1,11 +1,11 @@
-package com.hanghae.orderservice.domain.order.event;
+package com.hanghae.paymentservice.domain.payment.event;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 @AllArgsConstructor
-@Getter
-public class FailedPaymentEvent {
+@Data
+public class PaymentSuccessEvent {
   private String productId;
   private String orderId;
   private Integer quantity;
