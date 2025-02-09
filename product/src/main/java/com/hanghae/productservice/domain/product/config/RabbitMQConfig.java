@@ -7,7 +7,6 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,12 +33,9 @@ public class RabbitMQConfig {
     return rabbitTemplate;
   }
 
-  @Value("${message.exchange}")
-  private String exchange;
-  @Value("${message.queue.payment}")
-  private String queuePayment;
-  @Value("${message.queue.product}")
-  private String queueProduct;
+  public static final String exchange = "service";
+  public static final String queuePayment = "service.payment";
+  public static final String queueProduct = "service.product";
 
   @Bean
   public TopicExchange exchange() {
@@ -63,12 +59,9 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(queueProduct()).to(exchange()).with(queueProduct);
   }
 
-  @Value("${message2.err.exchange}")
-  private String exchangeErr;
-  @Value("${message2.queue.err.order}")
-  private String queueErrOrder;
-  @Value("${message2.queue.err.payment}")
-  private String queueErrPayment;
+  public static final String exchangeErr = "service.err";
+  public static final String queueErrOrder = "service.err.order";
+  public static final String queueErrPayment = "service.err.payment";
 
   @Bean
   public TopicExchange exchangeErr() {
@@ -92,4 +85,5 @@ public class RabbitMQConfig {
   public Binding bindingErrPayment() {
     return BindingBuilder.bind(queueErrPayment()).to(exchangeErr()).with(queueErrPayment);
   }
+
 }
