@@ -1,11 +1,11 @@
 package com.hanghae.userservice.domain.user.service;
 
 import com.hanghae.userservice.common.exception.BizRuntimeException;
-import com.hanghae.userservice.domain.user.dto.LoginRequestDto;
-import com.hanghae.userservice.domain.user.dto.LoginResponseDto;
+import com.hanghae.userservice.domain.user.dto.user.LoginRequestDto;
+import com.hanghae.userservice.domain.user.dto.user.LoginResponseDto;
 import com.hanghae.userservice.domain.user.dto.ProfileRequestDto;
-import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
-import com.hanghae.userservice.domain.user.dto.UserResponseDto;
+import com.hanghae.userservice.domain.user.dto.user.SignupRequestDto;
+import com.hanghae.userservice.domain.user.dto.user.UserResponseDto;
 import com.hanghae.userservice.domain.user.entity.User;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.jwt.JwtUtil;

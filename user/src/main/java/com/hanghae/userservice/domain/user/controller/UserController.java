@@ -2,11 +2,11 @@ package com.hanghae.userservice.domain.user.controller;
 
 import com.hanghae.userservice.common.dto.ResponseMessage;
 import com.hanghae.userservice.common.util.ParseRequestUtil;
-import com.hanghae.userservice.domain.user.dto.LoginRequestDto;
-import com.hanghae.userservice.domain.user.dto.LoginResponseDto;
+import com.hanghae.userservice.domain.user.dto.user.LoginRequestDto;
+import com.hanghae.userservice.domain.user.dto.user.LoginResponseDto;
 import com.hanghae.userservice.domain.user.dto.ProfileRequestDto;
-import com.hanghae.userservice.domain.user.dto.SignupRequestDto;
-import com.hanghae.userservice.domain.user.dto.UserResponseDto;
+import com.hanghae.userservice.domain.user.dto.user.SignupRequestDto;
+import com.hanghae.userservice.domain.user.dto.user.UserResponseDto;
 import com.hanghae.userservice.domain.user.jwt.JwtUtil;
 import com.hanghae.userservice.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
