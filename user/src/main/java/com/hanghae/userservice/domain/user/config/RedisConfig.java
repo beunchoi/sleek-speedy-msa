@@ -1,4 +1,4 @@
-package com.hanghae.paymentservice.domain.payment.config;
+package com.hanghae.userservice.domain.user.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
