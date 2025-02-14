@@ -1,5 +1,6 @@
 package com.hanghae.userservice.domain.user.entity;
 
+import com.hanghae.userservice.common.util.Timestamp;
 import com.hanghae.userservice.domain.user.dto.user.SignupRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Table(name = "user")
-public class User {
+public class User extends Timestamp {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

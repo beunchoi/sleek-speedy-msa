@@ -1,5 +1,6 @@
 package com.hanghae.userservice.domain.user.entity;
 
+import com.hanghae.userservice.common.util.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "wish")
 @NoArgsConstructor
-public class Wish {
+public class Wish extends Timestamp {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

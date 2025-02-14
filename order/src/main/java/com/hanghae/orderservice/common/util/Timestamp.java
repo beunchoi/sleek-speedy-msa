@@ -1,4 +1,4 @@
-package com.hanghae.productservice.domain.product.entity;
+package com.hanghae.orderservice.common.util;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

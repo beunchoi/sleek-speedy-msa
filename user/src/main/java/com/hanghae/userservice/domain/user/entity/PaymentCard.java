@@ -1,5 +1,6 @@
 package com.hanghae.userservice.domain.user.entity;
 
+import com.hanghae.userservice.common.util.Timestamp;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "card")
 @NoArgsConstructor
 @Getter
-public class PaymentCard {
+public class PaymentCard extends Timestamp {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
