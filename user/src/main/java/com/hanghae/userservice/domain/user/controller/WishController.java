@@ -1,9 +1,9 @@
 package com.hanghae.userservice.domain.user.controller;
 
+import com.hanghae.userservice.common.dto.ProductResponseDto;
 import com.hanghae.userservice.common.dto.ResponseMessage;
 import com.hanghae.userservice.common.util.ParseRequestUtil;
 import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
-import com.hanghae.userservice.domain.user.entity.Wish;
 import com.hanghae.userservice.domain.user.service.WishService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -47,7 +47,7 @@ public class WishController {
   @GetMapping
   public ResponseEntity<ResponseMessage> getMyWishList(HttpServletRequest request) {
     String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    List<WishResponseDto> responses = wishService.getMyWishList(userId);
+    List<ProductResponseDto> responses = wishService.getMyWishList(userId);
 
     ResponseMessage message = ResponseMessage.builder()
         .data(responses)

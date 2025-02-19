@@ -1,31 +1,34 @@
 package com.hanghae.userservice.domain.user.service;
 
 import com.hanghae.userservice.common.dto.ProductResponseDto;
-import com.hanghae.userservice.domain.user.client.wish.ProductServiceClient;
 import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
 import com.hanghae.userservice.domain.user.entity.Wish;
 import com.hanghae.userservice.domain.user.repository.WishRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WishService {
 
   private final WishRepository wishRepository;
-  private final ProductServiceClient productServiceClient;
+  private final ProductFetchService productFetchService;
 
   @Transactional
   public WishResponseDto createUpdateWish(String userId, String productId) {
-    ProductResponseDto response = productServiceClient.getProductByProductId(productId);
-    if (response == null) {
-      throw new IllegalArgumentException("해당 상품이 존재하지 않습니다.");
+    ProductResponseDto response = productFetchService.getProductByProductId(productId);
+
+    if (response == null || response.getTitle().isEmpty()) {
+      throw new RuntimeException("해당 상품이 존재하지 않습니다.");
     }
 
-    Wish wish = wishRepository.findByUserIdAndProductId(userId, response.getProductId()).orElse(null);
+    Wish wish = wishRepository.findByUserIdAndProductId(userId, response.getProductId())
+        .orElse(null);
 
     if (wish == null) {
       Wish savedWish = wishRepository.save(new Wish(userId, response.getProductId(), true));
@@ -39,12 +42,13 @@ public class WishService {
     }
   }
 
-  public List<WishResponseDto> getMyWishList(String userId) {
+  public List<ProductResponseDto> getMyWishList(String userId) {
     List<Wish> wishList = wishRepository.findAllByUserIdAndActiveIsTrue(userId);
-    List<WishResponseDto> responseDtos = new ArrayList<>();
+    List<ProductResponseDto> responseDtos = new ArrayList<>();
 
     for (Wish wish : wishList) {
-      responseDtos.add(new WishResponseDto(wish));
+      ProductResponseDto wishProduct = productFetchService.getProductByProductId(wish.getProductId());
+      responseDtos.add(wishProduct);
     }
 
     return responseDtos;
