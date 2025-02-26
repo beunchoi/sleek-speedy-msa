@@ -28,21 +28,23 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-
-    // Spring WebFlux 의존성
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     // RabbitMQ
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
-    implementation 'org.redisson:redisson:3.16.0'
+    // Resilience4j
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 tasks.named('test') {
