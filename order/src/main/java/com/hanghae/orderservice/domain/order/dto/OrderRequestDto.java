@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class OrderRequestDto {
-  private String productId;
   private Integer quantity;
-  private Integer price;
+  private String paymentMethodId;
 }

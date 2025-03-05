@@ -6,16 +6,19 @@ import com.hanghae.orderservice.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j(topic = "OrderEventConsumer")
+@Component
 public class OrderEventConsumer {
 
   private final OrderService orderService;
 
   @RabbitListener(queues = RabbitMQConfig.queueErrOrder)
-  public void handleFailedOrder(PaymentFailedEvent event) {
+  public void handleFailedEvent(PaymentFailedEvent event) {
+    log.info("결제 실패 이벤트 소비: {}", event);
     orderService.rollbackOrder(event);
-    log.info("롤백으로 주문 취소됨");
   }
+
 }
