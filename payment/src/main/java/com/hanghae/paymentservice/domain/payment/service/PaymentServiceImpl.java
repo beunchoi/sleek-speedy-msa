@@ -9,6 +9,7 @@ import com.hanghae.paymentservice.domain.payment.repository.PaymentRepository;
 import com.hanghae.paymentservice.domain.payment.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
+  @Transactional
   public void savePayment(OrderCreatedEvent event) {
     try {
       stockRepository.getAndDecreaseStock(event.getProductId(), event.getQuantity());
