@@ -5,6 +5,7 @@ import com.hanghae.productservice.common.util.ParseRequestUtil;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
 import com.hanghae.productservice.domain.product.service.ProductService;
+import com.hanghae.productservice.domain.product.service.ProductServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -41,21 +43,18 @@ public class ProductController {
   }
 
   @GetMapping
-  public ResponseEntity<ResponseMessage> getProducts() {
-    List<ProductResponseDto> responses = productService.getProducts();
+  public ResponseEntity<List<ProductResponseDto>> getProducts(
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "size", defaultValue = "20") int size
+  ) {
+    List<ProductResponseDto> responses = productService.getProducts(page, size);
 
-    ResponseMessage message = ResponseMessage.builder()
-        .data(responses)
-        .statusCode(200)
-        .resultMessage("상품 목록 조회")
-        .build();
-
-    return ResponseEntity.status(HttpStatus.OK).body(message);
+    return ResponseEntity.status(HttpStatus.OK).body(responses);
   }
 
   @PostMapping("/{productId}/initialize")
   public ResponseEntity<String> initializeStock(HttpServletRequest request,
-      @PathVariable String productId) {
+      @PathVariable("productId") String productId) {
     // 관리자 권한 검증
     ParseRequestUtil.validateAdminRoleFromRequest(request);
     productService.initializeStock(productId);

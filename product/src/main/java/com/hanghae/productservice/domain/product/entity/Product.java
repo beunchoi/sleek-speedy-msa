@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +22,7 @@ public class Product extends Timestamp {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @Column(nullable = false, unique = true)
-  private String productId;
+  private String productId = UUID.randomUUID().toString();
   @Column(nullable = false)
   private String title;
   @Column(nullable = false)
@@ -33,8 +34,7 @@ public class Product extends Timestamp {
   @Column(nullable = false)
   private Integer stock;
 
-  public Product(String productId, ProductRequestDto requestDto) {
-    this.productId = productId;
+  public Product(ProductRequestDto requestDto) {
     this.title = requestDto.getTitle();
     this.price = requestDto.getPrice();
     this.category = requestDto.getCategory();
