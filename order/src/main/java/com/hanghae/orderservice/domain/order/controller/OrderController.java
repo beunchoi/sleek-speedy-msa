@@ -2,7 +2,6 @@ package com.hanghae.orderservice.domain.order.controller;
 
 import com.hanghae.orderservice.common.dto.ResponseMessage;
 import com.hanghae.orderservice.common.util.ParseRequestUtil;
-import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.dto.ReturnResponseDto;
 import com.hanghae.orderservice.domain.order.service.OrderService;
@@ -14,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,22 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
   private final OrderService orderService;
-
-  @PostMapping
-  public ResponseEntity<ResponseMessage> createOrder(
-      HttpServletRequest request,
-      @RequestParam("productId") String productId,
-      @RequestBody OrderRequestDto requestDto) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
-    OrderResponseDto savedOrder = orderService.createOrder(requestDto, productId, userId);
-
-    ResponseMessage message = ResponseMessage.builder()
-        .data(savedOrder)
-        .statusCode(201)
-        .build();
-
-    return ResponseEntity.status(HttpStatus.CREATED).body(message);
-  }
 
   @GetMapping
   public ResponseEntity<List<OrderResponseDto>> getOrdersByUserId(HttpServletRequest request) {

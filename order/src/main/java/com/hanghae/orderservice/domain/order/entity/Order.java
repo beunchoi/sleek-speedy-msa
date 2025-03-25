@@ -1,8 +1,7 @@
 package com.hanghae.orderservice.domain.order.entity;
 
-import com.hanghae.orderservice.common.dto.ProductResponseDto;
 import com.hanghae.orderservice.common.util.Timestamp;
-import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
+import com.hanghae.orderservice.domain.order.event.StockCheckEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +26,7 @@ public class Order extends Timestamp {
   @Column(nullable = false)
   private String userId;
   @Column(nullable = false, unique = true)
-  private String orderId = UUID.randomUUID().toString();
+  private String orderId;
   @Column(nullable = false)
   private String productId;
   @Column(nullable = false)
@@ -44,15 +42,12 @@ public class Order extends Timestamp {
   @Column
   private LocalDate returnRequestedDate;
 
-  public Order(OrderRequestDto request, String userId, ProductResponseDto product) {
-    this.userId = userId;
-    this.productId = product.getProductId();
-    this.quantity = request.getQuantity();
-    this.price = product.getPrice();
-  }
-
-  public void success() {
-    this.status = OrderStatus.ORDERED;
+  public Order(StockCheckEvent event) {
+    this.orderId = event.getOrderId();
+    this.userId = event.getUserId();
+    this.productId = event.getProductId();
+    this.quantity = event.getQuantity();
+    this.price = event.getPrice();
   }
 
   public void failure() {

@@ -5,7 +5,7 @@ import com.hanghae.orderservice.domain.order.entity.OrderStatus;
 import lombok.Data;
 
 @Data
-public class CancelResponse {
+public class CancelResponseDto {
 
   private String userId;
   private String orderId;
@@ -15,13 +15,12 @@ public class CancelResponse {
   private Integer totalPrice;
   private OrderStatus status;
 
-  public CancelResponse(Order order) {
+  public CancelResponseDto(Order order) {
     this.userId = order.getUserId();
     this.orderId = order.getOrderId();
     this.productId = order.getProductId();
     this.quantity = order.getQuantity();
     this.price = order.getPrice();
-    this.totalPrice = order.getTotalPrice();
     this.status = order.getStatus();
   }
 }

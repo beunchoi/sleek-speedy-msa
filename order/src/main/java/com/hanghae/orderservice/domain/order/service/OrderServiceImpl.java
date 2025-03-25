@@ -1,13 +1,14 @@
 package com.hanghae.orderservice.domain.order.service;
 
 import com.hanghae.orderservice.common.dto.ProductResponseDto;
-import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.dto.ReturnResponseDto;
 import com.hanghae.orderservice.domain.order.entity.Order;
 import com.hanghae.orderservice.domain.order.entity.OrderStatus;
 import com.hanghae.orderservice.domain.order.event.OrderCreatedEvent;
+import com.hanghae.orderservice.domain.order.event.OrderFailedEvent;
 import com.hanghae.orderservice.domain.order.event.PaymentFailedEvent;
+import com.hanghae.orderservice.domain.order.event.StockCheckEvent;
 import com.hanghae.orderservice.domain.order.producer.OrderEventProducer;
 import com.hanghae.orderservice.domain.order.repository.OrderRepository;
 import java.time.LocalDate;
@@ -15,12 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Primary
 public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository orderRepository;
@@ -31,23 +34,19 @@ public class OrderServiceImpl implements OrderService {
 
   @Transactional
   @Override
-  public OrderResponseDto createOrder(OrderRequestDto requestDto, String productId, String userId) {
-    // 상품 재고 체크
-    ProductResponseDto product = checkProduct(productId);
-    if (product.getStock() < requestDto.getQuantity()) {
-      throw new IllegalArgumentException("상품 재고가 부족합니다.");
-    }
-
-    // 구매 가능 시간 체크
-
+  public void createOrder(StockCheckEvent event) {
     // 주문 데이터 저장
-    Order savedOrder = orderRepository.save(new Order(requestDto, userId, product));
-    int totalPrice = savedOrder.getPrice() * savedOrder.getQuantity();
-    orderEventProducer.publish(new OrderCreatedEvent(savedOrder.getOrderId(),
-        requestDto.getPaymentMethodId(), totalPrice,
-        savedOrder.getProductId(), savedOrder.getQuantity()));
+    try {
+      Order savedOrder = orderRepository.save(new Order(event));
 
-    return new OrderResponseDto(savedOrder);
+      int totalPrice = savedOrder.getPrice() * savedOrder.getQuantity();
+      orderEventProducer.publish(new OrderCreatedEvent(savedOrder.getOrderId(),
+          event.getPaymentMethodId(), totalPrice,
+          savedOrder.getProductId(), savedOrder.getQuantity()));
+    } catch (Exception e) {
+      rollbackOrder(new PaymentFailedEvent(
+          event.getProductId(), event.getOrderId(), event.getQuantity()));
+    }
   }
 
   @Override
@@ -127,8 +126,10 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public void rollbackOrder(PaymentFailedEvent event) {
     Order order = findOrderByOrderId(event.getOrderId());
-
     order.failure();
+
+    orderEventProducer.publishFailEvent(
+        new OrderFailedEvent(event.getProductId(), event.getQuantity()));
   }
 
   @Override

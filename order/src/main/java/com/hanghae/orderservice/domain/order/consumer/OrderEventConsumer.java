@@ -2,6 +2,7 @@ package com.hanghae.orderservice.domain.order.consumer;
 
 import com.hanghae.orderservice.domain.order.config.RabbitMQConfig;
 import com.hanghae.orderservice.domain.order.event.PaymentFailedEvent;
+import com.hanghae.orderservice.domain.order.event.StockCheckEvent;
 import com.hanghae.orderservice.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,12 @@ import org.springframework.stereotype.Component;
 public class OrderEventConsumer {
 
   private final OrderService orderService;
+
+  @RabbitListener(queues = RabbitMQConfig.queueOrder)
+  public void handleEvent(StockCheckEvent event) {
+    log.info("재고 확인 이벤트 소비: {}", event);
+    orderService.createOrder(event);
+  }
 
   @RabbitListener(queues = RabbitMQConfig.queueErrOrder)
   public void handleFailedEvent(PaymentFailedEvent event) {

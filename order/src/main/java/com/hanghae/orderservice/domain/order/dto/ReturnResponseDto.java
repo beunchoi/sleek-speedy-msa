@@ -22,7 +22,6 @@ public class ReturnResponseDto {
     this.productId = order.getProductId();
     this.quantity = order.getQuantity();
     this.price = order.getPrice();
-    this.totalPrice = order.getTotalPrice();
     this.status = order.getStatus();
     this.returnRequestedDate = order.getReturnRequestedDate();
   }
