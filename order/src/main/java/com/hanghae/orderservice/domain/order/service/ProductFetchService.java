@@ -22,16 +22,20 @@ public class ProductFetchService {
 
   @Retry(name = "increaseProductStock", fallbackMethod = "fallbackIncreaseProductStock")
   public void increaseProductStock(String productId, int quantity) {
+    log.info("FeignClient 호출, productId={}, quantity={}", productId, quantity);
     productServiceClient.increaseProductStock(productId, quantity);
   }
 
   public ProductResponseDto fallbackGetProductByProductId(String productId, Throwable t) {
-    log.error("fallbackGetProductByProductId 메서드 실행, productId={}, error={}", productId, t.getMessage());
+    log.error("fallbackGetProductByProductId 메서드 실행, productId={}, error={}",
+        productId, t.getMessage());
     return new ProductResponseDto(productId);
   }
 
-  public void fallbackIncreaseProductStock(String productId, Throwable t) {
-    log.error("fallbackIncreaseProductStock 메서드 실행, productId={}, error={}", productId, t.getMessage());
+  public void fallbackIncreaseProductStock(String productId, int quantity, Throwable t) {
+    log.error("fallbackIncreaseProductStock 메서드 실행, productId={}, quantity={}, error={}",
+        productId, quantity, t.getMessage());
+    throw new RuntimeException(t.getMessage());
   }
 
 }
