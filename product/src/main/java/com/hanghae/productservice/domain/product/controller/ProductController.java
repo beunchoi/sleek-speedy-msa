@@ -4,8 +4,9 @@ import com.hanghae.productservice.common.dto.ResponseMessage;
 import com.hanghae.productservice.common.util.ParseRequestUtil;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
+import com.hanghae.productservice.domain.product.dto.PurchaseRequestDto;
+import com.hanghae.productservice.domain.product.dto.PurchaseResponseDto;
 import com.hanghae.productservice.domain.product.service.ProductService;
-import com.hanghae.productservice.domain.product.service.ProductServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
   private final ProductService productService;
+
+  @PostMapping("/{productId}/purchase")
+  public ResponseEntity<ResponseMessage> purchaseProduct(HttpServletRequest request,
+      @PathVariable("productId") String productId,
+      @RequestBody PurchaseRequestDto requestDto) {
+    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    PurchaseResponseDto response = productService.purchaseProduct(productId, userId, requestDto);
+
+    ResponseMessage message = ResponseMessage.builder()
+        .data(response)
+        .statusCode(200)
+        .resultMessage("주문을 정상적으로 완료하였습니다.")
+        .build();
+
+    return ResponseEntity.status(HttpStatus.OK).body(message);
+  }
 
   @PostMapping
   public ResponseEntity<ResponseMessage> createProduct(HttpServletRequest request,

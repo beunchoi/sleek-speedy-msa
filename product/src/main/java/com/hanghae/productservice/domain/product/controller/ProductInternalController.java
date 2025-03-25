@@ -3,7 +3,6 @@ package com.hanghae.productservice.domain.product.controller;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
 import com.hanghae.productservice.domain.product.event.PaymentSuccessEvent;
 import com.hanghae.productservice.domain.product.service.ProductService;
-import com.hanghae.productservice.domain.product.service.ProductServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
