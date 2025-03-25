@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/email")
+@RequestMapping("/mail")
 public class MailController {
 
   private final MailService mailService;
 
   @PostMapping("/send")
-  public ResponseEntity<ResponseMessage> mailSend(@RequestBody @Valid MailRequestDto mailRequestDto)
+  public ResponseEntity<ResponseMessage> sendMail(@RequestBody @Valid MailRequestDto mailRequestDto)
       throws MessagingException {
     String code = mailService.sendSimpleMessage(mailRequestDto.getEmail());
 
