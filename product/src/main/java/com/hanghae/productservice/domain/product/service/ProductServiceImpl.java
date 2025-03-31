@@ -41,15 +41,15 @@ public class ProductServiceImpl implements ProductService {
   public PurchaseResponseDto purchaseProduct(String productId, String userId,
       PurchaseRequestDto requestDto) {
     // 구매 가능 시간 체크
-    try {
       Long result = productStockRepository.checkAndDecreaseStock(productId, requestDto.getQuantity());
 
       if (result == null || result == -2) {
-        throw new IllegalStateException("재고 조회 중 오류가 발생했습니다.");
+        throw new IllegalStateException("재고 확인 중 오류가 발생했습니다.");
       } else if (result == -1) {
         throw new IllegalStateException("재고가 부족합니다.");
       }
 
+    try {
       String price = productStockRepository.getPrice(productId);
 
       String orderId = UUID.randomUUID().toString();
@@ -57,8 +57,10 @@ public class ProductServiceImpl implements ProductService {
           orderId, requestDto.getQuantity(), requestDto.getPaymentMethodId()));
       return new PurchaseResponseDto(orderId);
     } catch (Exception e) {
-        productStockRepository.increaseStock(productId, requestDto.getQuantity());
-        throw e;
+      Long restoredStock = productStockRepository.increaseStock(productId, requestDto.getQuantity());
+      log.error("재고 확인 후 프로세스 중 에러 발생, 복구된 재고={}, message={}",
+          restoredStock, e.getMessage());
+      throw e;
     }
   }
 

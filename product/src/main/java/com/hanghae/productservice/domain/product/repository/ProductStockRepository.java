@@ -45,7 +45,7 @@ public class ProductStockRepository {
 
     if (price == null) {
       Product product = productRepository.findByProductId(productId)
-          .orElseThrow(() -> new RuntimeException("상품이 존재하지 않습니다."));
+          .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
       price = String.valueOf(product.getPrice());
 
       redisTemplate.opsForValue().set(PRICE_KEY_PREFIX + productId, price);
@@ -63,8 +63,8 @@ public class ProductStockRepository {
     return redisTemplate.opsForValue().get(STOCK_KEY_PREFIX + productId);
   }
 
-  public void increaseStock(String productId, int quantity) {
-    redisTemplate.opsForValue().increment(STOCK_KEY_PREFIX + productId, quantity);
+  public Long increaseStock(String productId, int quantity) {
+    return redisTemplate.opsForValue().increment(STOCK_KEY_PREFIX + productId, quantity);
   }
 
 }
