@@ -44,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
           event.getPaymentMethodId(), totalPrice,
           savedOrder.getProductId(), savedOrder.getQuantity()));
     } catch (Exception e) {
+      log.error("주문 프로세스 중 에러 발생, message={}", e.getMessage());
       rollbackOrder(new PaymentFailedEvent(
           event.getProductId(), event.getOrderId(), event.getQuantity()));
     }
@@ -125,11 +126,15 @@ public class OrderServiceImpl implements OrderService {
   @Transactional
   @Override
   public void rollbackOrder(PaymentFailedEvent event) {
-    Order order = findOrderByOrderId(event.getOrderId());
-    order.failure();
+    try {
+      Order order = findOrderByOrderId(event.getOrderId());
+      order.failure();
 
-    orderEventProducer.publishFailEvent(
-        new OrderFailedEvent(event.getProductId(), event.getQuantity()));
+      orderEventProducer.publishFailEvent(
+          new OrderFailedEvent(event.getProductId(), event.getQuantity()));
+    } catch (Exception e) {
+      // dlq?
+    }
   }
 
   @Override

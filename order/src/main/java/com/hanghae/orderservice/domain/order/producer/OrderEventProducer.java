@@ -24,7 +24,7 @@ public class OrderEventProducer {
   public void publishFailEvent(OrderFailedEvent event) {
     rabbitTemplate.convertAndSend(RabbitMQConfig.exchangeErr, RabbitMQConfig.queueErrOrder,
         event);
-    log.info("주문 생성 이벤트 전송");
+    log.info("주문 생성 실패 이벤트 전송");
   }
 
 }
