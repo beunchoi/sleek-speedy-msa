@@ -127,15 +127,15 @@ public class ProductServiceImpl implements ProductService {
     Product product = productRepository.findByProductIdWithLock(event.getProductId())
         .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-    if (product.getStock() >= event.getQuantity()) {
-      product.updateStock(product.getStock() - event.getQuantity());
-      log.info("재고 DB 저장 성공");
+    if (product.getStock() < event.getQuantity()) {
+      productEventProducer.publishFailedEvent(new StockUpdateFailedEvent(
+          event.getProductId(), event.getOrderId(), event.getQuantity()));
+      log.error("재고 저장 중 에러 발생");
       return;
     }
 
-    productEventProducer.publishFailedEvent(new StockUpdateFailedEvent(
-        event.getProductId(), event.getOrderId(), event.getQuantity()));
-    log.error("재고 저장 중 에러 발생");
+    product.updateStock(product.getStock() - event.getQuantity());
+    log.info("재고 DB 저장 성공");
   }
 
   @Override
