@@ -1,5 +1,6 @@
 package com.hanghae.productservice.domain.product.service;
 
+import com.hanghae.productservice.common.exception.OutOfStockException;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
 import com.hanghae.productservice.domain.product.dto.PurchaseRequestDto;
@@ -124,18 +125,21 @@ public class ProductServiceImpl implements ProductService {
   @Transactional
   @Override
   public void decreaseProductStock(PaymentSuccessEvent event) {
-    Product product = productRepository.findByProductIdWithLock(event.getProductId())
-        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+    try {
+      Product product = productRepository.findByProductIdWithLock(event.getProductId())
+          .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-    if (product.getStock() < event.getQuantity()) {
+      if (product.getStock() < event.getQuantity()) {
+        throw new OutOfStockException("재고가 부족합니다.");
+      }
+
+      product.updateStock(product.getStock() - event.getQuantity());
+      log.info("재고 DB 저장 성공");
+    } catch (Exception e) {
       productEventProducer.publishFailedEvent(new StockUpdateFailedEvent(
           event.getProductId(), event.getOrderId(), event.getQuantity()));
-      log.error("재고 저장 중 에러 발생");
-      return;
+      log.error("재고 저장 중 에러 발생", e);
     }
-
-    product.updateStock(product.getStock() - event.getQuantity());
-    log.info("재고 DB 저장 성공");
   }
 
   @Override
