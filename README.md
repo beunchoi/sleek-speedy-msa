@@ -12,11 +12,11 @@
 
 ## 프로젝트 소개
 sleek speedy는 대규모 트래픽을 효율적으로 처리하여 한정 수량의 상품에 대한 선착순 구매를 지원하는 서비스입니다. 
-사용자는 원하는 상품을 위시리스트에 담고 정해진 시간에 주문 및 결제를 진행하여 선착순으로 빠르게 결제를 완료하면 상품을 구매할 수 있습니다.
+사용자는 원하는 상품을 위시리스트에 담고 주문 및 결제를 진행하여 선착순으로 빠르게 결제를 완료하면 상품을 구매할 수 있습니다.
 
 ## 서비스 아키텍처
 <br><br>
-![아키텍처5png](https://github.com/user-attachments/assets/0ecd93ef-116f-41bc-976d-c221e9fca6a2)
+<img width="1369" height="733" alt="아키텍처1231" src="https://github.com/user-attachments/assets/e9d19e18-069a-4584-b7e2-09e2c22b9600" />
 
 <br><br>
 ### 🗂️ ERD DIAGRAM
@@ -37,7 +37,7 @@ https://right-talk-b8b.notion.site/67f29bac30d24509a416c1bfb4fc1b2a?v=f224cba5c5
 <img src="https://img.shields.io/badge/java-%23ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/21-515151?style=for-the-badge">
 
 ### Libraries
-<img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Data JPA"> <img src="https://img.shields.io/badge/WebClient-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="WebClient"> <img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens"> <img src="http://img.shields.io/badge/google smtp-4285F4?style=for-the-badge&logo=google&logoColor=white"> <img src="https://img.shields.io/badge/kakaopay OpenApi-ffcd00.svg?style=for-the-badge&logo=Kakao&logoColor=000000">
+<img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Data JPA"> <img src="https://img.shields.io/badge/FeignClient-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="FeignClient"> <img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens"> <img src="http://img.shields.io/badge/google smtp-4285F4?style=for-the-badge&logo=google&logoColor=white"> <img src="https://img.shields.io/badge/kakaopay OpenApi-ffcd00.svg?style=for-the-badge&logo=Kakao&logoColor=000000">
 
 
 ### Database
