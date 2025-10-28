@@ -1,5 +1,7 @@
 package com.hanghae.userservice.domain.user.service;
 
+import com.hanghae.userservice.common.exception.user.AddressNotFoundException;
+import com.hanghae.userservice.common.exception.user.UserNotFoundException;
 import com.hanghae.userservice.domain.user.dto.address.AddressRequestDto;
 import com.hanghae.userservice.domain.user.dto.address.AddressResponseDto;
 import com.hanghae.userservice.domain.user.entity.Address;
@@ -18,7 +20,7 @@ public class AddressService {
 
   public AddressResponseDto createAddress(AddressRequestDto requestDto,String userId) {
     User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
 
     Address savedAddress = addressRepository.save(new Address(requestDto, user.getUserId()));
 
@@ -27,7 +29,7 @@ public class AddressService {
 
   public AddressResponseDto getAddress(String userId) {
     Address address = addressRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("사용자의 주소가 존재하지 않습니다."));
+        .orElseThrow(() -> new AddressNotFoundException("사용자의 주소가 존재하지 않습니다."));
 
     return new AddressResponseDto(address);
   }

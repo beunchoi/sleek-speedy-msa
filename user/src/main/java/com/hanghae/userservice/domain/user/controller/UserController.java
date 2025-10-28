@@ -67,7 +67,7 @@ public class UserController {
 
   @PatchMapping("/profile")
   public ResponseEntity<ResponseMessage> updateProfile(HttpServletRequest request, @RequestBody ProfileRequestDto requestDto) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     String updatedProfile = userService.updateProfile(userId, requestDto);
 
     ResponseMessage message = ResponseMessage.builder()
@@ -81,7 +81,7 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<ResponseMessage> getUserInfoByUserId(HttpServletRequest request) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     UserResponseDto response = userService.getUserInfoByUserId(userId);
 
     ResponseMessage message = ResponseMessage.builder()

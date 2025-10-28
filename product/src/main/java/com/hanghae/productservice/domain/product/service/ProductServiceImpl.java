@@ -1,6 +1,7 @@
 package com.hanghae.productservice.domain.product.service;
 
-import com.hanghae.productservice.common.exception.OutOfStockException;
+import com.hanghae.productservice.common.exception.product.OutOfStockException;
+import com.hanghae.productservice.common.exception.product.ProductNotFoundException;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
 import com.hanghae.productservice.domain.product.dto.PurchaseRequestDto;
@@ -41,14 +42,14 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public PurchaseResponseDto purchaseProduct(String productId, String userId,
       PurchaseRequestDto requestDto) {
-    // 구매 가능 시간 체크
-      Long result = productStockRepository.checkAndDecreaseStock(productId, requestDto.getQuantity());
 
-      if (result == null || result == -2) {
-        throw new IllegalStateException("재고 확인 중 오류가 발생했습니다.");
-      } else if (result == -1) {
-        throw new IllegalStateException("재고가 부족합니다.");
-      }
+    Long result = productStockRepository.checkAndDecreaseStock(productId, requestDto.getQuantity());
+
+    if (result == null || result == -2) {
+      throw new RuntimeException("재고 확인 중 오류가 발생했습니다.");
+    } else if (result == -1) {
+      throw new OutOfStockException("재고가 부족합니다.");
+    }
 
     try {
       String price = productStockRepository.getPrice(productId);
@@ -93,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public void initializeStock(String productId) {
     Product product = productRepository.findByProductId(productId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        .orElseThrow(() -> new ProductNotFoundException("해당 상품이 존재하지 않습니다."));
 
     productStockRepository.initializeStock(productId, product);
   }
@@ -108,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ProductResponseDto increaseProductStock(int quantity, String productId) {
     Product product = productRepository.findByProductId(productId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        .orElseThrow(() -> new ProductNotFoundException("해당 상품이 존재하지 않습니다."));
 
     product.increaseStock(quantity);
     return new ProductResponseDto(product);
@@ -117,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public ProductResponseDto getProductByProductId(String productId) {
     Product product = productRepository.findByProductId(productId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        .orElseThrow(() -> new ProductNotFoundException("해당 상품이 존재하지 않습니다."));
 
     return new ProductResponseDto(product);
   }
@@ -127,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
   public void decreaseProductStock(PaymentSuccessEvent event) {
     try {
       Product product = productRepository.findByProductIdWithLock(event.getProductId())
-          .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+          .orElseThrow(() -> new ProductNotFoundException("해당 상품이 존재하지 않습니다."));
 
       if (product.getStock() < event.getQuantity()) {
         throw new OutOfStockException("재고가 부족합니다.");

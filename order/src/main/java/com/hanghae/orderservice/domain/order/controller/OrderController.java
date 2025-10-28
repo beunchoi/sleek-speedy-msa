@@ -25,7 +25,7 @@ public class OrderController {
 
   @GetMapping
   public ResponseEntity<List<OrderResponseDto>> getOrdersByUserId(HttpServletRequest request) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     List<OrderResponseDto> responses = orderService.getOrdersByUserId(userId);
 
     return ResponseEntity.status(HttpStatus.OK).body(responses);
@@ -33,7 +33,7 @@ public class OrderController {
 
   @PatchMapping("/{orderId}/cancel")
   public ResponseEntity<ResponseMessage> cancelOrder(HttpServletRequest request, @PathVariable("orderId") String orderId) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     OrderResponseDto response = orderService.cancelOrder(userId, orderId);
 
     ResponseMessage message = ResponseMessage.builder()
@@ -48,7 +48,7 @@ public class OrderController {
   @PatchMapping("/{orderId}/return")
   public ResponseEntity<ResponseMessage> requestProductReturn(HttpServletRequest request,
       @PathVariable("orderId") String orderId) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     ReturnResponseDto response = orderService.requestProductReturn(userId, orderId);
 
     ResponseMessage message = ResponseMessage.builder()

@@ -1,6 +1,7 @@
 package com.hanghae.userservice.domain.user.service;
 
 import com.hanghae.userservice.common.dto.ProductResponseDto;
+import com.hanghae.userservice.common.exception.product.ProductNotFoundException;
 import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
 import com.hanghae.userservice.domain.user.entity.Wish;
 import com.hanghae.userservice.domain.user.repository.WishRepository;
@@ -24,7 +25,7 @@ public class WishService {
     ProductResponseDto response = productFetchService.getProductByProductId(productId);
 
     if (response == null || response.getTitle().isEmpty()) {
-      throw new RuntimeException("해당 상품이 존재하지 않습니다.");
+      throw new ProductNotFoundException("해당 상품이 존재하지 않습니다.");
     }
 
     Wish wish = wishRepository.findByUserIdAndProductId(userId, response.getProductId())

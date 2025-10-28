@@ -4,7 +4,6 @@ import com.hanghae.userservice.common.dto.ResponseMessage;
 import com.hanghae.userservice.common.util.ParseRequestUtil;
 import com.hanghae.userservice.domain.user.dto.address.AddressRequestDto;
 import com.hanghae.userservice.domain.user.dto.address.AddressResponseDto;
-import com.hanghae.userservice.domain.user.entity.Address;
 import com.hanghae.userservice.domain.user.service.AddressService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class AddressController {
 
   @PostMapping
   public ResponseEntity<ResponseMessage> createAddress(HttpServletRequest request, @RequestBody AddressRequestDto requestDto) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     AddressResponseDto response = addressService.createAddress(requestDto, userId);
 
     ResponseMessage message = ResponseMessage.builder()
@@ -39,7 +38,7 @@ public class AddressController {
 
   @GetMapping
   public ResponseEntity<ResponseMessage> getAddress(HttpServletRequest request) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     AddressResponseDto response = addressService.getAddress(userId);
 
     ResponseMessage message = ResponseMessage.builder()

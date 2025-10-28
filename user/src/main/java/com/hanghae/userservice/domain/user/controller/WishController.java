@@ -25,7 +25,7 @@ public class WishController {
 
   @PostMapping("/{productId}")
   public ResponseEntity<ResponseMessage> createUpdateWish(HttpServletRequest request, @PathVariable("productId") String productId) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     WishResponseDto response = wishService.createUpdateWish(userId, productId);
 
     String resultMessage;
@@ -46,7 +46,7 @@ public class WishController {
 
   @GetMapping
   public ResponseEntity<ResponseMessage> getMyWishList(HttpServletRequest request) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     List<ProductResponseDto> responses = wishService.getMyWishList(userId);
 
     ResponseMessage message = ResponseMessage.builder()

@@ -37,13 +37,8 @@ public class MailController {
 
   @PostMapping("/auth")
   public ResponseEntity<?> authCheck(@RequestBody MailAuthDto mailAuthDto) {
-    Boolean checked = mailService.checkAuthNum(mailAuthDto.getEmail(), mailAuthDto.getAuthNum());
-    if (checked) {
-      return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 성공");
-    }
-    else {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 인증 실패");
-    }
+    mailService.checkAuthNum(mailAuthDto.getEmail(), mailAuthDto.getAuthNum());
+    return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 성공");
   }
 
 }

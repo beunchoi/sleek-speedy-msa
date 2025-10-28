@@ -31,7 +31,7 @@ public class ProductController {
   public ResponseEntity<ResponseMessage> purchaseProduct(HttpServletRequest request,
       @PathVariable("productId") String productId,
       @RequestBody PurchaseRequestDto requestDto) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     PurchaseResponseDto response = productService.purchaseProduct(productId, userId, requestDto);
 
     ResponseMessage message = ResponseMessage.builder()

@@ -1,5 +1,6 @@
 package com.hanghae.userservice.domain.user.service;
 
+import com.hanghae.userservice.common.exception.user.PaymentMethodNotFoundException;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodRequestDto;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodResponseDto;
 import com.hanghae.userservice.domain.user.entity.PaymentBankAccount;
@@ -62,12 +63,12 @@ public class PaymentMethodService {
   public void deletePaymentMethod(String paymentMethodId) {
     if (paymentMethodId.contains(CARD)) {
       PaymentCard card = paymentCardRepository.findByCardId(paymentMethodId)
-          .orElseThrow(() -> new IllegalArgumentException("해당 결제 수단이 존재하지 않습니다."));
+          .orElseThrow(() -> new PaymentMethodNotFoundException("해당 결제 수단을 찾을 수 없습니다."));
       card.deleteCard();
     } else if (paymentMethodId.contains(BANK_ACCOUNT)) {
       PaymentBankAccount bankAccount = paymentBankAccountRepository
           .findByBankAccountId(paymentMethodId)
-          .orElseThrow(() -> new IllegalArgumentException("해당 결제 수단이 존재하지 않습니다."));
+          .orElseThrow(() -> new PaymentMethodNotFoundException("해당 결제 수단을 찾을 수 없습니다."));
       bankAccount.deleteBankAccount();
     } else {
       throw new IllegalArgumentException("유효하지 않은 결제 수단입니다.");

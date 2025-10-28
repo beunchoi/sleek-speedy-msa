@@ -1,5 +1,6 @@
 package com.hanghae.userservice.domain.user.service;
 
+import com.hanghae.userservice.common.exception.user.AuthCodeMismatchException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Objects;
@@ -30,18 +31,22 @@ public class MailService {
     try {
       javaMailSender.send(message);
     } catch (MailException e) {
-      throw new IllegalArgumentException("메일 발송 중 오류가 발생했습니다.");
+      throw new RuntimeException("메일 발송 중 오류가 발생했습니다.");
     }
 
     return number;
   }
 
-  public Boolean checkAuthNum(String email, String authNum) {
+  public void checkAuthNum(String email, String authNum) {
     String code = redisTemplate.opsForValue().get(email);
-    return Objects.equals(code, authNum);
+
+    if (code == null || !Objects.equals(code, authNum)) {
+      throw new AuthCodeMismatchException("인증 코드가 불일치합니다.");
+    }
+
   }
 
-  public String createNumber() {
+  private String createNumber() {
     Random random = new Random();
     StringBuilder key = new StringBuilder();
 
@@ -58,7 +63,7 @@ public class MailService {
     return key.toString();
   }
 
-  public MimeMessage createMail(String email, String number) throws MessagingException {
+  private MimeMessage createMail(String email, String number) throws MessagingException {
     MimeMessage message = javaMailSender.createMimeMessage();
 
     message.setFrom(senderEmail);

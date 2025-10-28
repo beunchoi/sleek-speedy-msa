@@ -39,15 +39,14 @@ public class User extends Timestamp {
 
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
-  private UserRoleEnum role;
+  private UserRoleEnum role = UserRoleEnum.USER;
 
-  public User(String userId, SignupRequestDto request, String password, UserRoleEnum role) {
+  public User(String userId, SignupRequestDto request, String password) {
     this.userId = userId;
     this.email = request.getEmail();
     this.password = password;
     this.name = request.getName();
     this.phoneNum = request.getPhoneNum();
-    this.role = role;
   }
 
   public void updateProfile(String profile) {

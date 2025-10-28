@@ -28,7 +28,7 @@ public class PaymentMethodController {
   @PostMapping
   public ResponseEntity<ResponseMessage> createPaymentMethod(HttpServletRequest request,
       @RequestBody PaymentMethodRequestDto requestDto) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     paymentMethodService.createPaymentMethod(userId, requestDto);
 
     ResponseMessage message = ResponseMessage.builder()
@@ -41,7 +41,7 @@ public class PaymentMethodController {
 
   @GetMapping
   public ResponseEntity<ResponseMessage> getMyAllPaymentMethod(HttpServletRequest request) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     List<PaymentMethodResponseDto> responses = paymentMethodService.getMyAllPaymentMethod(userId);
 
     ResponseMessage message = ResponseMessage.builder()
@@ -56,7 +56,7 @@ public class PaymentMethodController {
   @DeleteMapping("/{paymentMethodId}")
   public ResponseEntity<?> deletePaymentMethod(HttpServletRequest request,
       @PathVariable("paymentMethodId") String paymentMethodId) {
-    String userId = new ParseRequestUtil().extractUserIdFromRequest(request);
+    String userId = ParseRequestUtil.extractUserIdFromRequest(request);
     paymentMethodService.deletePaymentMethod(paymentMethodId);
 
     ResponseMessage message = ResponseMessage.builder()

@@ -1,6 +1,7 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.exception.BizRuntimeException;
+import com.hanghae.userservice.common.exception.user.InvalidTokenException;
+import com.hanghae.userservice.common.exception.user.TokenMismatchException;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.jwt.JwtUtil;
 import java.util.concurrent.TimeUnit;
@@ -19,12 +20,12 @@ public class TokenService {
   public String reissueToken(String refreshToken) {
 
     if (!jwtUtil.validateToken(refreshToken)) {
-      throw new BizRuntimeException("토큰이 유효하지 않습니다.");
+      throw new InvalidTokenException("토큰이 유효하지 않습니다.");
     }
 
     String userId = jwtUtil.getUserInfoFromToken(refreshToken).getSubject();
     if (!validateTokenUsingRedis(userId, refreshToken)) {
-      throw new BizRuntimeException("토큰이 유효하지 않습니다.");
+      throw new TokenMismatchException("토큰이 불일치합니다.");
     }
 
     String roleString = jwtUtil.getUserInfoFromToken(refreshToken)

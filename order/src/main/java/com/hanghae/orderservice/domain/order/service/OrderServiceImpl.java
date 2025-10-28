@@ -1,6 +1,10 @@
 package com.hanghae.orderservice.domain.order.service;
 
 import com.hanghae.orderservice.common.dto.ProductResponseDto;
+import com.hanghae.orderservice.common.exception.order.InvalidOrderStatusException;
+import com.hanghae.orderservice.common.exception.order.OrderForbiddenException;
+import com.hanghae.orderservice.common.exception.order.OrderNotFoundException;
+import com.hanghae.orderservice.common.exception.product.ProductNotFoundException;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.dto.ReturnResponseDto;
 import com.hanghae.orderservice.domain.order.entity.Order;
@@ -55,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     ProductResponseDto product = productFetchService.getProductByProductId(productId);
 
     if (product == null) {
-      throw new IllegalArgumentException("상품을 찾을 수 없습니다.");
+      throw new ProductNotFoundException("상품을 찾을 수 없습니다.");
     }
 
     return product;
@@ -79,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
     Order order = validateAndGetOrder(userId, orderId);
 
     if (!order.getStatus().equals(OrderStatus.ORDERED)) {
-      throw new IllegalStateException("배송 전의 상품만 취소할 수 있습니다.");
+      throw new InvalidOrderStatusException("배송 전의 상품만 취소할 수 있습니다.");
     }
 
     order.cancel();
@@ -95,11 +99,11 @@ public class OrderServiceImpl implements OrderService {
 
     // 주문 상태가 배송 완료이고 배송일 다음날까지만 반품 처리 가능
     if (!order.getStatus().equals(OrderStatus.DELIVERED)) {
-      throw new IllegalStateException("배송 완료 상태가 아닙니다.");
+      throw new InvalidOrderStatusException("배송 완료 상태가 아닙니다.");
     }
 
     if (!LocalDate.now().isBefore(order.getDeliveredDate().plusDays(RETURN_PERIOD_DAYS))) {
-      throw new IllegalStateException("반품 가능한 기간이 지났습니다.");
+      throw new InvalidOrderStatusException("반품 가능한 기간이 지났습니다.");
     }
 
     order.requestProductReturn();
@@ -142,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
     Order order = findOrderByOrderId(orderId);
 
     if (!order.getUserId().equals(userId)) {
-      throw new IllegalStateException("사용자의 주문이 아닙니다.");
+      throw new OrderForbiddenException("사용자의 주문이 아닙니다.");
     }
     return order;
   }
@@ -150,7 +154,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public Order findOrderByOrderId(String orderId) {
     Order order = orderRepository.findByOrderId(orderId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new OrderNotFoundException("해당 주문이 존재하지 않습니다."));
     return order;
   }
 
