@@ -1,6 +1,6 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.exception.user.AuthCodeMismatchException;
+import com.hanghae.common.exception.user.AuthCodeMismatchException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Objects;

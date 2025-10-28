@@ -1,6 +1,6 @@
 package com.hanghae.userservice.domain.user.controller;
 
-import com.hanghae.userservice.common.dto.ResponseMessage;
+import com.hanghae.common.dto.ResponseMessage;
 import com.hanghae.userservice.domain.user.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

@@ -1,6 +1,6 @@
 package com.hanghae.userservice.domain.user.entity;
 
-import com.hanghae.userservice.common.util.Timestamp;
+import com.hanghae.common.util.Timestamp;
 import com.hanghae.userservice.domain.user.dto.user.SignupRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

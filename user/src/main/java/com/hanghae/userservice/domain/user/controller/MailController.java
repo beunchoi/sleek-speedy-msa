@@ -1,6 +1,6 @@
 package com.hanghae.userservice.domain.user.controller;
 
-import com.hanghae.userservice.common.dto.ResponseMessage;
+import com.hanghae.common.dto.ResponseMessage;
 import com.hanghae.userservice.domain.user.dto.mail.MailAuthDto;
 import com.hanghae.userservice.domain.user.dto.mail.MailRequestDto;
 import com.hanghae.userservice.domain.user.service.MailService;

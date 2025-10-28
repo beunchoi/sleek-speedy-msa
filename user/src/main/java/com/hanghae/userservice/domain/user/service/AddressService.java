@@ -1,7 +1,7 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.exception.user.AddressNotFoundException;
-import com.hanghae.userservice.common.exception.user.UserNotFoundException;
+import com.hanghae.common.exception.user.AddressNotFoundException;
+import com.hanghae.common.exception.user.UserNotFoundException;
 import com.hanghae.userservice.domain.user.dto.address.AddressRequestDto;
 import com.hanghae.userservice.domain.user.dto.address.AddressResponseDto;
 import com.hanghae.userservice.domain.user.entity.Address;

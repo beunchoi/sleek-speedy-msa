@@ -1,7 +1,7 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.exception.user.InvalidTokenException;
-import com.hanghae.userservice.common.exception.user.TokenMismatchException;
+import com.hanghae.common.exception.user.InvalidTokenException;
+import com.hanghae.common.exception.user.TokenMismatchException;
 import com.hanghae.userservice.domain.user.entity.UserRoleEnum;
 import com.hanghae.userservice.domain.user.jwt.JwtUtil;
 import java.util.concurrent.TimeUnit;

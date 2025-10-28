@@ -1,7 +1,6 @@
 package com.hanghae.orderservice.domain.order.service;
 
-import com.hanghae.orderservice.common.dto.ProductResponseDto;
-import com.hanghae.orderservice.domain.order.dto.OrderRequestDto;
+import com.hanghae.common.dto.ProductResponseDto;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.dto.ReturnResponseDto;
 import com.hanghae.orderservice.domain.order.entity.Order;

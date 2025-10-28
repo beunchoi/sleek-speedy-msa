@@ -1,6 +1,6 @@
 package com.hanghae.productservice.domain.product.entity;
 
-import com.hanghae.productservice.common.util.Timestamp;
+import com.hanghae.common.util.Timestamp;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

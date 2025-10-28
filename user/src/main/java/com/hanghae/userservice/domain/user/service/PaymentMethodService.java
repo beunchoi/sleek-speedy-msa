@@ -1,6 +1,6 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.exception.user.PaymentMethodNotFoundException;
+import com.hanghae.common.exception.user.PaymentMethodNotFoundException;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodRequestDto;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodResponseDto;
 import com.hanghae.userservice.domain.user.entity.PaymentBankAccount;

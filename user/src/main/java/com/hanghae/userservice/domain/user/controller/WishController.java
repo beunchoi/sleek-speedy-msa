@@ -1,8 +1,8 @@
 package com.hanghae.userservice.domain.user.controller;
 
-import com.hanghae.userservice.common.dto.ProductResponseDto;
-import com.hanghae.userservice.common.dto.ResponseMessage;
-import com.hanghae.userservice.common.util.ParseRequestUtil;
+import com.hanghae.common.dto.ProductResponseDto;
+import com.hanghae.common.dto.ResponseMessage;
+import com.hanghae.common.util.ParseRequestUtil;
 import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
 import com.hanghae.userservice.domain.user.service.WishService;
 import jakarta.servlet.http.HttpServletRequest;

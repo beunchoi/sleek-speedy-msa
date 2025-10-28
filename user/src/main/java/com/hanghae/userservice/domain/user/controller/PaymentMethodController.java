@@ -1,7 +1,7 @@
 package com.hanghae.userservice.domain.user.controller;
 
-import com.hanghae.userservice.common.dto.ResponseMessage;
-import com.hanghae.userservice.common.util.ParseRequestUtil;
+import com.hanghae.common.dto.ResponseMessage;
+import com.hanghae.common.util.ParseRequestUtil;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodRequestDto;
 import com.hanghae.userservice.domain.user.dto.paymentmethod.PaymentMethodResponseDto;
 import com.hanghae.userservice.domain.user.service.PaymentMethodService;

@@ -1,7 +1,7 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.dto.ProductResponseDto;
-import com.hanghae.userservice.common.exception.product.ProductNotFoundException;
+import com.hanghae.common.dto.ProductResponseDto;
+import com.hanghae.common.exception.product.ProductNotFoundException;
 import com.hanghae.userservice.domain.user.dto.wish.WishResponseDto;
 import com.hanghae.userservice.domain.user.entity.Wish;
 import com.hanghae.userservice.domain.user.repository.WishRepository;

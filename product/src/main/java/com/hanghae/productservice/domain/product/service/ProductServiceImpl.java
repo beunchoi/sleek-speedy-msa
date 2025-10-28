@@ -1,7 +1,7 @@
 package com.hanghae.productservice.domain.product.service;
 
-import com.hanghae.productservice.common.exception.product.OutOfStockException;
-import com.hanghae.productservice.common.exception.product.ProductNotFoundException;
+import com.hanghae.common.exception.product.OutOfStockException;
+import com.hanghae.common.exception.product.ProductNotFoundException;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
 import com.hanghae.productservice.domain.product.dto.PurchaseRequestDto;

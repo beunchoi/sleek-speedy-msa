@@ -1,7 +1,7 @@
 package com.hanghae.productservice.domain.product.controller;
 
-import com.hanghae.productservice.common.dto.ResponseMessage;
-import com.hanghae.productservice.common.util.ParseRequestUtil;
+import com.hanghae.common.dto.ResponseMessage;
+import com.hanghae.common.util.ParseRequestUtil;
 import com.hanghae.productservice.domain.product.dto.ProductRequestDto;
 import com.hanghae.productservice.domain.product.dto.ProductResponseDto;
 import com.hanghae.productservice.domain.product.dto.PurchaseRequestDto;

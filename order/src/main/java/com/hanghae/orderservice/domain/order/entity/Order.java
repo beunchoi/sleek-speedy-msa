@@ -1,6 +1,6 @@
 package com.hanghae.orderservice.domain.order.entity;
 
-import com.hanghae.orderservice.common.util.Timestamp;
+import com.hanghae.common.util.Timestamp;
 import com.hanghae.orderservice.domain.order.event.StockCheckEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

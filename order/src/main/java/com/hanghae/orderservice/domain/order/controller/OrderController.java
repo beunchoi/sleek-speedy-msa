@@ -1,7 +1,7 @@
 package com.hanghae.orderservice.domain.order.controller;
 
-import com.hanghae.orderservice.common.dto.ResponseMessage;
-import com.hanghae.orderservice.common.util.ParseRequestUtil;
+import com.hanghae.common.dto.ResponseMessage;
+import com.hanghae.common.util.ParseRequestUtil;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.dto.ReturnResponseDto;
 import com.hanghae.orderservice.domain.order.service.OrderService;

@@ -1,6 +1,6 @@
 package com.hanghae.orderservice.domain.order.service;
 
-import com.hanghae.orderservice.common.dto.ProductResponseDto;
+import com.hanghae.common.dto.ProductResponseDto;
 import com.hanghae.orderservice.domain.order.client.ProductServiceClient;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;

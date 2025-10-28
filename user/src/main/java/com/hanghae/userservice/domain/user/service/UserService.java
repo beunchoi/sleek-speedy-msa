@@ -1,8 +1,8 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.exception.user.UnauthorizedException;
-import com.hanghae.userservice.common.exception.user.UserAlreadyExistsException;
-import com.hanghae.userservice.common.exception.user.UserNotFoundException;
+import com.hanghae.common.exception.user.UnauthorizedException;
+import com.hanghae.common.exception.user.UserAlreadyExistsException;
+import com.hanghae.common.exception.user.UserNotFoundException;
 import com.hanghae.userservice.domain.user.dto.ProfileRequestDto;
 import com.hanghae.userservice.domain.user.dto.user.LoginRequestDto;
 import com.hanghae.userservice.domain.user.dto.user.LoginResponseDto;

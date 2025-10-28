@@ -1,6 +1,6 @@
 package com.hanghae.userservice.domain.user.service;
 
-import com.hanghae.userservice.common.dto.ProductResponseDto;
+import com.hanghae.common.dto.ProductResponseDto;
 import com.hanghae.userservice.domain.user.client.wish.ProductServiceClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;

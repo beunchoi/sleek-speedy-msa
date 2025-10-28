@@ -1,10 +1,10 @@
 package com.hanghae.orderservice.domain.order.service;
 
-import com.hanghae.orderservice.common.dto.ProductResponseDto;
-import com.hanghae.orderservice.common.exception.order.InvalidOrderStatusException;
-import com.hanghae.orderservice.common.exception.order.OrderForbiddenException;
-import com.hanghae.orderservice.common.exception.order.OrderNotFoundException;
-import com.hanghae.orderservice.common.exception.product.ProductNotFoundException;
+import com.hanghae.common.dto.ProductResponseDto;
+import com.hanghae.common.exception.order.InvalidOrderStatusException;
+import com.hanghae.common.exception.order.OrderForbiddenException;
+import com.hanghae.common.exception.order.OrderNotFoundException;
+import com.hanghae.common.exception.product.ProductNotFoundException;
 import com.hanghae.orderservice.domain.order.dto.OrderResponseDto;
 import com.hanghae.orderservice.domain.order.dto.ReturnResponseDto;
 import com.hanghae.orderservice.domain.order.entity.Order;
